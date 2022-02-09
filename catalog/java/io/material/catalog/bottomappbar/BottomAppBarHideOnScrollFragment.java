@@ -132,7 +132,6 @@ public class BottomAppBarHideOnScrollFragment extends DemoFragment implements On
         v -> bottomDrawerBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED)
     );
     bar.setNavigationIcon(R.drawable.ic_drawer_menu_24px);
-    bar.replaceMenu(R.menu.demo_primary);
   }
 
   private void showSnackbar(CharSequence text) {
