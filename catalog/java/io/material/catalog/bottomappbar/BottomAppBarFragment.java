@@ -18,12 +18,20 @@ package io.material.catalog.bottomappbar;
 
 import io.material.catalog.R;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import dagger.Provides;
 import dagger.android.ContributesAndroidInjector;
 import dagger.multibindings.IntoSet;
 import io.material.catalog.application.scope.ActivityScope;
 import io.material.catalog.application.scope.FragmentScope;
+import io.material.catalog.bottomnav.BottomNavigationAnimatedDemoFragment;
+import io.material.catalog.bottomnav.BottomNavigationColorStylesDemoFragment;
+import io.material.catalog.bottomnav.BottomNavigationLabelVisibilityDemoFragment;
 import io.material.catalog.feature.Demo;
 import io.material.catalog.feature.DemoLandingFragment;
 import io.material.catalog.feature.FeatureDemo;
@@ -49,6 +57,35 @@ public class BottomAppBarFragment extends DemoLandingFragment {
         return new BottomAppBarMainDemoFragment();
       }
     };
+  }
+
+  @Override
+  public List<Demo> getAdditionalDemos() {
+    List<Demo> additionalDemos = new ArrayList<>();
+    additionalDemos.add(
+        new Demo(R.string.cat_bottomappbar_simple_demo_title) {
+          @Override
+          public Fragment createFragment() {
+            return new BottomAppBarSimpleDemoFragment();
+          }
+        });
+    additionalDemos.add(
+        new Demo(R.string.cat_bottomappbar_hide_on_scroll_demo_title) {
+          @Nullable
+          @Override
+          public Fragment createFragment() {
+            return new BottomAppBarHideOnScrollFragment();
+          }
+        });
+    additionalDemos.add(
+        new Demo(R.string.cat_bottomappbar_corner_fab_demo_title) {
+          @Nullable
+          @Override
+          public Fragment createFragment() {
+            return new BottomAppBarCornerFabDemoFragment();
+          }
+        });
+    return additionalDemos;
   }
 
   /** The Dagger module for {@link BottomAppBarFragment} dependencies. */
