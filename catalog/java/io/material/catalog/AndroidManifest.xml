@@ -50,12 +50,12 @@
       android:name=".topappbar.TopAppBarActionBarDemoActivity"
       android:exported="true"
       android:label="@string/cat_topappbar_action_bar_title"
-      android:theme="@style/Theme.MaterialComponents.DayNight"/>
+      android:theme="@style/Theme.Cat.ActionBar"/>
     <activity
       android:name=".topappbar.TopAppBarDarkActionBarDemoActivity"
       android:exported="true"
       android:label="@string/cat_topappbar_dark_action_bar_title"
-      android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar"/>
+      android:theme="@style/Theme.Cat.DarkActionBar"/>
     <activity
       android:name=".topappbar.TopAppBarScrollingTransparentStatusDemoActivity"
       android:exported="true"
