@@ -83,6 +83,7 @@ import com.google.android.material.internal.ViewUtils;
 import com.google.android.material.resources.MaterialResources;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -262,19 +263,11 @@ public abstract class BaseTransientBottomBar<B extends BaseTransientBottomBar<B>
 
   private int duration;
   private boolean gestureInsetBottomIgnored;
-  @Nullable private View anchorView;
+
+  @Nullable
+  private Anchor anchor;
+
   private boolean anchorViewLayoutListenerEnabled = false;
-  private final OnGlobalLayoutListener anchorViewLayoutListener =
-      new OnGlobalLayoutListener() {
-        @Override
-        public void onGlobalLayout() {
-          if (!anchorViewLayoutListenerEnabled) {
-            return;
-          }
-          extraBottomMarginAnchorView = calculateBottomMarginForAnchorView();
-          updateMargins();
-        }
-      };
 
   @RequiresApi(VERSION_CODES.Q)
   private final Runnable bottomMarginGestureInsetRunnable =
@@ -382,6 +375,7 @@ public abstract class BaseTransientBottomBar<B extends BaseTransientBottomBar<B>
     if (content instanceof SnackbarContentLayout) {
       ((SnackbarContentLayout) content)
           .updateActionTextColorAlphaIfNeeded(view.getActionTextColorAlpha());
+      ((SnackbarContentLayout) content).setMaxInlineActionWidth(view.getMaxInlineActionWidth());
     }
     view.addView(content);
 
@@ -451,7 +445,7 @@ public abstract class BaseTransientBottomBar<B extends BaseTransientBottomBar<B>
     }
 
     int extraBottomMargin =
-        anchorView != null ? extraBottomMarginAnchorView : extraBottomMarginWindowInset;
+        getAnchorView() != null ? extraBottomMarginAnchorView : extraBottomMarginWindowInset;
     MarginLayoutParams marginParams = (MarginLayoutParams) layoutParams;
     marginParams.bottomMargin = originalMargins.bottom + extraBottomMargin;
     marginParams.leftMargin = originalMargins.left + extraLeftMarginWindowInset;
@@ -566,15 +560,16 @@ public abstract class BaseTransientBottomBar<B extends BaseTransientBottomBar<B>
    */
   @Nullable
   public View getAnchorView() {
-    return anchorView;
+    return anchor == null ? null : anchor.getAnchorView();
   }
 
   /** Sets the view the {@link BaseTransientBottomBar} should be anchored above. */
   @NonNull
   public B setAnchorView(@Nullable View anchorView) {
-    ViewUtils.removeOnGlobalLayoutListener(this.anchorView, anchorViewLayoutListener);
-    this.anchorView = anchorView;
-    ViewUtils.addOnGlobalLayoutListener(this.anchorView, anchorViewLayoutListener);
+    if (this.anchor != null) {
+      this.anchor.unanchor();
+    }
+    this.anchor = anchorView == null ? null : Anchor.anchor(this, anchorView);
     return (B) this;
   }
 
@@ -768,8 +763,7 @@ public abstract class BaseTransientBottomBar<B extends BaseTransientBottomBar<B>
         setUpBehavior((CoordinatorLayout.LayoutParams) lp);
       }
 
-      extraBottomMarginAnchorView = calculateBottomMarginForAnchorView();
-      updateMargins();
+      recalculateAndUpdateMargins();
 
       // Set view to INVISIBLE so it doesn't flash on the screen before the inset adjustment is
       // handled and the enter animation is started
@@ -861,18 +855,23 @@ public abstract class BaseTransientBottomBar<B extends BaseTransientBottomBar<B>
     clp.setBehavior(behavior);
     // Also set the inset edge so that views can dodge the bar correctly, but only if there is
     // no anchor view.
-    if (anchorView == null) {
+    if (getAnchorView() == null) {
       clp.insetEdge = Gravity.BOTTOM;
     }
   }
 
+  private void recalculateAndUpdateMargins() {
+    extraBottomMarginAnchorView = calculateBottomMarginForAnchorView();
+    updateMargins();
+  }
+
   private int calculateBottomMarginForAnchorView() {
-    if (anchorView == null) {
+    if (getAnchorView() == null) {
       return 0;
     }
 
     int[] anchorViewLocation = new int[2];
-    anchorView.getLocationOnScreen(anchorViewLocation);
+    getAnchorView().getLocationOnScreen(anchorViewLocation);
     int anchorViewAbsoluteYTop = anchorViewLocation[1];
 
     int[] targetParentLocation = new int[2];
@@ -1095,6 +1094,7 @@ public abstract class BaseTransientBottomBar<B extends BaseTransientBottomBar<B>
         callbacks.get(i).onDismissed((B) this, event);
       }
     }
+
     // Lastly, hide and remove the view from the parent (if attached)
     ViewParent parent = view.getParent();
     if (parent instanceof ViewGroup) {
@@ -1132,6 +1132,8 @@ public abstract class BaseTransientBottomBar<B extends BaseTransientBottomBar<B>
     @AnimationMode private int animationMode;
     private final float backgroundOverlayColorAlpha;
     private final float actionTextColorAlpha;
+    private final int maxWidth;
+    private final int maxInlineActionWidth;
     private ColorStateList backgroundTint;
     private PorterDuff.Mode backgroundTintMode;
 
@@ -1159,6 +1161,9 @@ public abstract class BaseTransientBottomBar<B extends BaseTransientBottomBar<B>
           ViewUtils.parseTintMode(
               a.getInt(R.styleable.SnackbarLayout_backgroundTintMode, -1), PorterDuff.Mode.SRC_IN));
       actionTextColorAlpha = a.getFloat(R.styleable.SnackbarLayout_actionTextColorAlpha, 1);
+      maxWidth = a.getDimensionPixelSize(R.styleable.SnackbarLayout_android_maxWidth, -1);
+      maxInlineActionWidth =
+          a.getDimensionPixelSize(R.styleable.SnackbarLayout_maxActionInlineWidth, -1);
       a.recycle();
 
       setOnTouchListener(consumeAllTouchListener);
@@ -1217,6 +1222,15 @@ public abstract class BaseTransientBottomBar<B extends BaseTransientBottomBar<B>
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+      super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+      if (maxWidth > 0 && getMeasuredWidth() > maxWidth) {
+        widthMeasureSpec = MeasureSpec.makeMeasureSpec(maxWidth, MeasureSpec.EXACTLY);
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+      }
+    }
+
+    @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
       super.onLayout(changed, l, t, r, b);
       if (onLayoutChangeListener != null) {
@@ -1267,6 +1281,14 @@ public abstract class BaseTransientBottomBar<B extends BaseTransientBottomBar<B>
 
     float getActionTextColorAlpha() {
       return actionTextColorAlpha;
+    }
+
+    int getMaxWidth() {
+      return maxWidth;
+    }
+
+    int getMaxInlineActionWidth() {
+      return maxInlineActionWidth;
     }
 
     @NonNull
@@ -1356,6 +1378,79 @@ public abstract class BaseTransientBottomBar<B extends BaseTransientBottomBar<B>
         default:
           break;
       }
+    }
+  }
+
+  @SuppressWarnings("rawtypes") // Generic type of BaseTransientBottomBar doesn't matter here.
+  static class Anchor
+      implements android.view.View.OnAttachStateChangeListener, OnGlobalLayoutListener {
+    @NonNull
+    private final WeakReference<BaseTransientBottomBar> transientBottomBar;
+
+    @NonNull
+    private final WeakReference<View> anchorView;
+
+    static Anchor anchor(
+        @NonNull BaseTransientBottomBar transientBottomBar, @NonNull View anchorView) {
+      Anchor anchor = new Anchor(transientBottomBar, anchorView);
+      if (ViewCompat.isAttachedToWindow(anchorView)) {
+        ViewUtils.addOnGlobalLayoutListener(anchorView, anchor);
+      }
+      anchorView.addOnAttachStateChangeListener(anchor);
+      return anchor;
+    }
+
+    private Anchor(
+        @NonNull BaseTransientBottomBar transientBottomBar, @NonNull View anchorView) {
+      this.transientBottomBar = new WeakReference<>(transientBottomBar);
+      this.anchorView = new WeakReference<>(anchorView);
+    }
+
+    @Override
+    public void onViewAttachedToWindow(View anchorView) {
+      if (unanchorIfNoTransientBottomBar()) {
+        return;
+      }
+      ViewUtils.addOnGlobalLayoutListener(anchorView, this);
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(View anchorView) {
+      if (unanchorIfNoTransientBottomBar()) {
+        return;
+      }
+      ViewUtils.removeOnGlobalLayoutListener(anchorView, this);
+    }
+
+    @Override
+    public void onGlobalLayout() {
+      if (unanchorIfNoTransientBottomBar()
+          || !transientBottomBar.get().anchorViewLayoutListenerEnabled) {
+        return;
+      }
+      transientBottomBar.get().recalculateAndUpdateMargins();
+    }
+
+    @Nullable
+    View getAnchorView() {
+      return anchorView.get();
+    }
+
+    private boolean unanchorIfNoTransientBottomBar() {
+      if (transientBottomBar.get() == null) {
+        unanchor();
+        return true;
+      }
+      return false;
+    }
+
+    void unanchor() {
+      if (anchorView.get() != null) {
+        anchorView.get().removeOnAttachStateChangeListener(this);
+        ViewUtils.removeOnGlobalLayoutListener(anchorView.get(), this);
+      }
+      anchorView.clear();
+      transientBottomBar.clear();
     }
   }
 }

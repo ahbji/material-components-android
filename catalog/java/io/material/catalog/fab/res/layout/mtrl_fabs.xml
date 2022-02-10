@@ -20,37 +20,36 @@
      full-screen containers. -->
 
 
-<GridLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:padding="8dp"
     android:clipToPadding="false"
-    android:columnCount="3"
-    android:rowCount="3">
+    tools:parentTag="android.widget.GridLayout">
 
   <TextView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginRight="24dp"
       android:layout_gravity="center"
-      android:text="@string/regular_fab_label"/>
+      android:text="@string/m3_surface_fab_label"/>
   <com.google.android.material.floatingactionbutton.FloatingActionButton
-      style="@style/Widget.MaterialComponents.FloatingActionButton"
+      style="?attr/floatingActionButtonSurfaceStyle"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_margin="8dp"
       android:layout_gravity="center"
-      android:contentDescription="@string/cat_regular_fab_content_desc"
+      android:contentDescription="@string/m3_surface_fab_content_desc"
       app:srcCompat="@drawable/ic_add_24px"/>
   <com.google.android.material.floatingactionbutton.FloatingActionButton
-      style="@style/Widget.MaterialComponents.FloatingActionButton"
+      style="?attr/floatingActionButtonSurfaceStyle"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_margin="8dp"
       android:layout_gravity="center"
-      android:contentDescription="@string/cat_regular_fab_mini_content_desc"
+      android:contentDescription="@string/m3_surface_fab_mini_content_desc"
       app:fabSize="mini"
       app:srcCompat="@drawable/ic_add_24px"/>
 
@@ -59,22 +58,70 @@
       android:layout_height="wrap_content"
       android:layout_marginRight="24dp"
       android:layout_gravity="center"
-      android:text="@string/legacy_fab_label"/>
+      android:text="@string/m3_primary_fab_label"/>
   <com.google.android.material.floatingactionbutton.FloatingActionButton
-      style="@style/Widget.Design.FloatingActionButton"
+      style="?attr/floatingActionButtonPrimaryStyle"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_margin="8dp"
       android:layout_gravity="center"
-      android:contentDescription="@string/cat_legacy_fab_content_desc"
+      android:contentDescription="@string/m3_primary_fab_content_desc"
       app:srcCompat="@drawable/ic_add_24px"/>
   <com.google.android.material.floatingactionbutton.FloatingActionButton
-      style="@style/Widget.Design.FloatingActionButton"
+      style="?attr/floatingActionButtonPrimaryStyle"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_margin="8dp"
       android:layout_gravity="center"
-      android:contentDescription="@string/cat_legacy_fab_mini_content_desc"
+      android:contentDescription="@string/m3_primary_fab_mini_content_desc"
       app:fabSize="mini"
       app:srcCompat="@drawable/ic_add_24px"/>
-</GridLayout>
+
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginRight="24dp"
+      android:layout_gravity="center"
+      android:text="@string/m3_secondary_fab_label"/>
+  <com.google.android.material.floatingactionbutton.FloatingActionButton
+      style="?attr/floatingActionButtonSecondaryStyle"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_margin="8dp"
+      android:layout_gravity="center"
+      android:contentDescription="@string/m3_secondary_fab_content_desc"
+      app:srcCompat="@drawable/ic_add_24px"/>
+  <com.google.android.material.floatingactionbutton.FloatingActionButton
+      style="?attr/floatingActionButtonSecondaryStyle"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_margin="8dp"
+      android:layout_gravity="center"
+      android:contentDescription="@string/m3_secondary_fab_mini_content_desc"
+      app:fabSize="mini"
+      app:srcCompat="@drawable/ic_add_24px"/>
+
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginRight="24dp"
+    android:layout_gravity="center"
+    android:text="@string/m3_tertiary_fab_label"/>
+  <com.google.android.material.floatingactionbutton.FloatingActionButton
+    style="?attr/floatingActionButtonTertiaryStyle"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:layout_gravity="center"
+    android:contentDescription="@string/m3_tertiary_fab_content_desc"
+    app:srcCompat="@drawable/ic_add_24px"/>
+  <com.google.android.material.floatingactionbutton.FloatingActionButton
+    style="?attr/floatingActionButtonTertiaryStyle"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:layout_gravity="center"
+    android:contentDescription="@string/m3_tertiary_fab_mini_content_desc"
+    app:fabSize="mini"
+    app:srcCompat="@drawable/ic_add_24px"/>
+</merge>

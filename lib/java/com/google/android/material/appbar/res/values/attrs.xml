@@ -22,6 +22,21 @@
   <!-- Style to use for CollapsingToolbarLayouts in this theme. -->
   <attr name="collapsingToolbarLayoutStyle" format="reference"/>
 
+  <!-- Style to use for Medium CollapsingToolbarLayouts in this theme. -->
+  <attr name="collapsingToolbarLayoutMediumStyle" format="reference"/>
+
+  <!-- Style to use for Large CollapsingToolbarLayouts in this theme. -->
+  <attr name="collapsingToolbarLayoutLargeStyle" format="reference"/>
+
+  <!-- Size to use for Medium CollapsingToolbarLayouts in this theme. -->
+  <attr name="collapsingToolbarLayoutMediumSize" format="reference"/>
+
+  <!-- Size to use for Large CollapsingToolbarLayouts in this theme. -->
+  <attr name="collapsingToolbarLayoutLargeSize" format="reference"/>
+
+  <!-- Style to use for Surface Toolbars in this theme. -->
+  <attr name="toolbarSurfaceStyle" format="reference"/>
+
   <declare-styleable name="AppBarLayout">
     <!-- Deprecated. Elevation is now controlled via a state list animator. -->
     <attr name="elevation"/>
@@ -39,7 +54,7 @@
          `RecyclerView`, etc.). Default is false. -->
     <attr name="liftOnScroll" format="boolean"/>
     <!-- The id of the view that the {@link AppBarLayout} should use to determine whether
-         it should be lifted (i.e., only if {@link R.attr#liftOnScroll} is set to true).
+         it should be lifted (i.e., only if {@code liftOnScroll} is set to true).
          If this id is not set, the {@link AppBarLayout} will use the target view provided
          by nested scrolling to determine whether it should be lifted. -->
     <attr name="liftOnScrollTargetViewId" format="reference"/>
@@ -49,9 +64,9 @@
   </declare-styleable>
 
   <declare-styleable name="AppBarLayoutStates">
-    <!-- @deprecated in favor of {@link R.attr#state_lifted}. -->
+    <!-- @deprecated in favor of {@code state_lifted}. -->
     <attr name="state_collapsed" format="boolean"/>
-    <!-- @deprecated in favor of {@link R.attr#state_liftable}. -->
+    <!-- @deprecated in favor of {@code state_liftable}. -->
     <attr name="state_collapsible" format="boolean"/>
     <!-- State value for {@link com.google.android.material.appbar.AppBarLayout} set when the view
          is lifted (elevated). -->
@@ -96,6 +111,15 @@
       <flag name="snapMargins" value="0x20"/>
     </attr>
 
+    <attr name="layout_scrollEffect" format="enum">
+      <!-- No effect will be applied to this child when its parent
+           AppBarLayout's offset changes.-->
+      <enum name="none" value="0"/>
+      <!-- This view will be compressed (masked and parallaxed) when it reaches
+           the top of the screen and continues to scroll out of view.-->
+      <enum name="compress" value="1"/>
+    </attr>
+
     <!-- An interpolator to use when scrolling this View. Only takes effect when View
          is scrollable. -->
     <attr name="layout_scrollInterpolator" format="reference"/>
@@ -128,6 +152,12 @@
     <!-- The text appearance of the CollapsingToolbarLayouts title when it is fully
          'collapsed' -->
     <attr name="collapsedTitleTextAppearance" format="reference"/>
+    <!-- The text color of the CollapsingToolbarLayout's title when it is fully
+         'expanded' -->
+    <attr name="expandedTitleTextColor" format="color|reference"/>
+    <!-- The text color of the CollapsingToolbarLayouts title when it is fully
+         'collapsed' -->
+    <attr name="collapsedTitleTextColor" format="color|reference"/>
     <!-- The drawable to use as a scrim on top of the CollapsingToolbarLayouts content when
          it has been scrolled sufficiently off screen. -->
     <attr name="contentScrim" format="color"/>
@@ -212,6 +242,10 @@
     <!-- Whether extra height should be added when the title text spans across
          multiple lines. Experimental Feature. -->
     <attr name="extraMultilineHeightEnabled" format="boolean" />
+
+    <!-- The interpolator to use when animating the title position from collapsed to expanded and
+         vice versa. -->
+    <attr name="titlePositionInterpolator" format="reference"/>
   </declare-styleable>
 
   <declare-styleable name="CollapsingToolbarLayout_Layout">
@@ -233,7 +267,7 @@
   <declare-styleable name="MaterialToolbar">
     <!-- The tint color for the navigation button icon drawable corresponding to
          the "app:navigationIcon" attribute. -->
-    <attr name="navigationIconTint" format="color" />
+    <attr name="navigationIconTint" />
     <!-- Whether the title text corresponding to the "app:title" attribute
          should be centered horizontally within the toolbar. Default is false.
     -->

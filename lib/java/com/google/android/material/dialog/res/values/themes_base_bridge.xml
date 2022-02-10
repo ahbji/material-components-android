@@ -46,7 +46,7 @@
     <item name="colorOnPrimarySurface">?attr/colorOnSurface</item>
 
     <item name="scrimBackground">@color/mtrl_scrim_color</item>
-    <item name="popupMenuBackground">@drawable/mtrl_popupmenu_background_dark</item>
+    <item name="popupMenuBackground">@drawable/mtrl_popupmenu_background_overlay</item>
 
     <item name="minTouchTargetSize">@dimen/mtrl_min_touch_target_size</item>
 
@@ -56,7 +56,9 @@
     <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Action</item>
     <item name="chipGroupStyle">@style/Widget.MaterialComponents.ChipGroup</item>
     <item name="chipStandaloneStyle">@style/Widget.MaterialComponents.Chip.Entry</item>
+    <item name="circularProgressIndicatorStyle">@style/Widget.MaterialComponents.CircularProgressIndicator</item>
     <item name="extendedFloatingActionButtonStyle">@style/Widget.MaterialComponents.ExtendedFloatingActionButton.Icon</item>
+    <item name="linearProgressIndicatorStyle">@style/Widget.MaterialComponents.LinearProgressIndicator</item>
     <item name="materialButtonStyle">@style/Widget.MaterialComponents.Button</item>
     <item name="materialButtonOutlinedStyle">@style/Widget.MaterialComponents.Button.OutlinedButton</item>
     <item name="materialButtonToggleGroupStyle">@style/Widget.MaterialComponents.MaterialButtonToggleGroup</item>
@@ -137,7 +139,9 @@
     <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Action</item>
     <item name="chipGroupStyle">@style/Widget.MaterialComponents.ChipGroup</item>
     <item name="chipStandaloneStyle">@style/Widget.MaterialComponents.Chip.Entry</item>
+    <item name="circularProgressIndicatorStyle">@style/Widget.MaterialComponents.CircularProgressIndicator</item>
     <item name="extendedFloatingActionButtonStyle">@style/Widget.MaterialComponents.ExtendedFloatingActionButton.Icon</item>
+    <item name="linearProgressIndicatorStyle">@style/Widget.MaterialComponents.LinearProgressIndicator</item>
     <item name="materialButtonStyle">@style/Widget.MaterialComponents.Button</item>
     <item name="materialButtonOutlinedStyle">@style/Widget.MaterialComponents.Button.OutlinedButton</item>
     <item name="materialButtonToggleGroupStyle">@style/Widget.MaterialComponents.MaterialButtonToggleGroup</item>

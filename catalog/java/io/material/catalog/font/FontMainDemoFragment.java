@@ -87,6 +87,10 @@ public class FontMainDemoFragment extends DemoFragment {
     return R.array.cat_font_style_names_array;
   }
 
+  protected boolean descriptionAllCaps() {
+    return true;
+  }
+
   protected String convertFontFamilyToDescription(String fontFamily) {
     if (fontFamily == null) {
       return "Regular";
@@ -115,11 +119,11 @@ public class FontMainDemoFragment extends DemoFragment {
 
       TypedValue value = new TypedValue();
       for (int i = 0; i < stylesArray.length(); i++) {
-        // 1. Get the attribute from the array: ?attr/textAppearanceHeadline1
+        // 1. Get the attribute from the array: ?attr/textAppearanceBodyLarge
         stylesArray.getValue(i, value);
         int attribute = value.data;
 
-        // 2. Get the style from the attribute: @style/TextAppearance.MaterialComponents.Headline1
+        // 2. Get the style from the attribute: @style/TextAppearance.Material3.BodyLarge
         TypedArray a = context.obtainStyledAttributes(new int[] {attribute});
         int style = a.getResourceId(0, 0);
         a.recycle();
@@ -179,6 +183,7 @@ public class FontMainDemoFragment extends DemoFragment {
 
       nameView.setText(name);
       descriptionView.setText(createDescription(name, style));
+      descriptionView.setAllCaps(descriptionAllCaps());
 
       TextViewCompat.setTextAppearance(nameView, style);
     }
@@ -190,7 +195,7 @@ public class FontMainDemoFragment extends DemoFragment {
           + " - "
           + convertFontFamilyToDescription(textAppearance.fontFamily)
           + " "
-          + pxToSp(textAppearance.textSize)
+          + pxToSp(textAppearance.getTextSize())
           + "sp";
     }
 

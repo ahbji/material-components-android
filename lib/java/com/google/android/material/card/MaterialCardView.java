@@ -60,8 +60,8 @@ import com.google.android.material.shape.Shapeable;
  * stroked border, regardless of the {@code strokeWidth} value.
  *
  * <p>Cards implement {@link Checkable}, a default way to switch to {@code android:checked_state} is
- * not provided. Clients have to call {@link #setChecked(boolean)}. This shows the {@link
- * R.attr#checkedIcon app:checkedIcon} and changes the overlay color.
+ * not provided. Clients have to call {@link #setChecked(boolean)}. This shows the {@code
+ * app:checkedIcon} and changes the overlay color.
  *
  * <p>Cards also have a custom state meant to be used when a card is draggable {@code
  * app:dragged_state}. It's used by calling {@link #setDragged(boolean)}. This changes the overlay
@@ -167,7 +167,7 @@ public class MaterialCardView extends CardView implements Checkable, Shapeable {
    * @param strokeColor The color of the stroke.
    */
   public void setStrokeColor(@ColorInt int strokeColor) {
-    cardViewHelper.setStrokeColor(ColorStateList.valueOf(strokeColor));
+    setStrokeColor(ColorStateList.valueOf(strokeColor));
   }
 
   /**
@@ -177,6 +177,7 @@ public class MaterialCardView extends CardView implements Checkable, Shapeable {
    */
   public void setStrokeColor(ColorStateList strokeColor) {
     cardViewHelper.setStrokeColor(strokeColor);
+    invalidate();
   }
 
   /** @deprecated use {@link #getStrokeColorStateList()} */
@@ -199,6 +200,7 @@ public class MaterialCardView extends CardView implements Checkable, Shapeable {
    */
   public void setStrokeWidth(@Dimension int strokeWidth) {
     cardViewHelper.setStrokeWidth(strokeWidth);
+    invalidate();
   }
 
   /** Returns the stroke width of this card view. */
@@ -429,6 +431,7 @@ public class MaterialCardView extends CardView implements Checkable, Shapeable {
       checked = !checked;
       refreshDrawableState();
       forceRippleRedrawIfNeeded();
+      cardViewHelper.setChecked(checked);
       if (onCheckedChangeListener != null) {
         onCheckedChangeListener.onCheckedChanged(this, checked);
       }

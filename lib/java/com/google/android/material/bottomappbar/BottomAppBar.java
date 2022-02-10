@@ -31,6 +31,7 @@ import android.content.res.TypedArray;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -44,6 +45,7 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.ColorInt;
 import androidx.annotation.Dimension;
 import androidx.annotation.IntDef;
 import androidx.annotation.MenuRes;
@@ -136,6 +138,7 @@ public class BottomAppBar extends Toolbar implements AttachedBehavior {
   @Retention(RetentionPolicy.SOURCE)
   public @interface FabAnimationMode {}
 
+  @Nullable private Integer navigationIconTint;
   private final int fabOffsetEndMode;
   private final MaterialShapeDrawable materialShapeDrawable = new MaterialShapeDrawable();
 
@@ -233,7 +236,7 @@ public class BottomAppBar extends Toolbar implements AttachedBehavior {
       };
 
   public BottomAppBar(@NonNull Context context) {
-    this(context, null, 0);
+    this(context, null);
   }
 
   public BottomAppBar(@NonNull Context context, @Nullable AttributeSet attrs) {
@@ -251,6 +254,10 @@ public class BottomAppBar extends Toolbar implements AttachedBehavior {
 
     ColorStateList backgroundTint =
         MaterialResources.getColorStateList(context, a, R.styleable.BottomAppBar_backgroundTint);
+
+    if (a.hasValue(R.styleable.BottomAppBar_navigationIconTint)) {
+      setNavigationIconTint(a.getColor(R.styleable.BottomAppBar_navigationIconTint, -1));
+    }
 
     int elevation = a.getDimensionPixelSize(R.styleable.BottomAppBar_elevation, 0);
     float fabCradleMargin = a.getDimensionPixelOffset(R.styleable.BottomAppBar_fabCradleMargin, 0);
@@ -328,6 +335,25 @@ public class BottomAppBar extends Toolbar implements AttachedBehavior {
             return insets;
           }
         });
+  }
+
+  @Override
+  public void setNavigationIcon(@Nullable Drawable drawable) {
+    super.setNavigationIcon(maybeTintNavigationIcon(drawable));
+  }
+
+  /**
+   * Sets the color of the toolbar's navigation icon.
+   *
+   * @see #setNavigationIcon
+   */
+  public void setNavigationIconTint(@ColorInt int navigationIconTint) {
+    this.navigationIconTint = navigationIconTint;
+    Drawable navigationIcon = getNavigationIcon();
+    if (navigationIcon != null) {
+      // Causes navigation icon to be tinted if needed.
+      setNavigationIcon(navigationIcon);
+    }
   }
 
   /**
@@ -473,12 +499,42 @@ public class BottomAppBar extends Toolbar implements AttachedBehavior {
 
   /** Animates the {@link BottomAppBar} so it hides off the screen. */
   public void performHide() {
-    getBehavior().slideDown(this);
+    performHide(/*animate=*/ true);
+  }
+
+  /**
+   *  Hides the {@link BottomAppBar}.
+   *
+   * @param animate {@code false} to hide the {@link BottomAppBar} immediately
+   *        without animation.
+   */
+  public void performHide(boolean animate) {
+    getBehavior().slideDown(this, animate);
   }
 
   /** Animates the {@link BottomAppBar} so it is shown on the screen. */
   public void performShow() {
-    getBehavior().slideUp(this);
+    performShow(/*animate=*/ true);
+  }
+
+  /**
+   * Shows the {@link BottomAppBar}.
+   *
+   * @param animate {@code false} to show the {@link BottomAppBar} immediately without
+   *     animation.
+   */
+  public void performShow(boolean animate) {
+    getBehavior().slideUp(this, animate);
+  }
+
+  /** Returns true if the {@link BottomAppBar} is scrolled down. */
+  public boolean isScrolledDown() {
+    return getBehavior().isScrolledDown();
+  }
+
+  /** Returns true if the {@link BottomAppBar} is scrolled up. */
+  public boolean isScrolledUp() {
+    return getBehavior().isScrolledUp();
   }
 
   @Override
@@ -661,6 +717,17 @@ public class BottomAppBar extends Toolbar implements AttachedBehavior {
         ObjectAnimator.ofFloat(findDependentFab(), "translationX", getFabTranslationX(targetMode));
     animator.setDuration(ANIMATION_DURATION);
     animators.add(animator);
+  }
+
+  @Nullable
+  private Drawable maybeTintNavigationIcon(@Nullable Drawable navigationIcon) {
+    if (navigationIcon != null && navigationIconTint != null) {
+      Drawable wrappedNavigationIcon = DrawableCompat.wrap(navigationIcon.mutate());
+      DrawableCompat.setTint(wrappedNavigationIcon, navigationIconTint);
+      return wrappedNavigationIcon;
+    } else {
+      return navigationIcon;
+    }
   }
 
   private void maybeAnimateMenuView(@FabAlignmentMode int targetMode, boolean newFabAttached) {
@@ -1097,6 +1164,16 @@ public class BottomAppBar extends Toolbar implements AttachedBehavior {
 
         if (dependentView instanceof FloatingActionButton) {
           FloatingActionButton fab = ((FloatingActionButton) dependentView);
+
+          // TODO (b/185233196): Update to use FABs default animator with motion theming.
+          // If there is no motion spec set on the anchored fab, set one which scales the fab to
+          // zero so the top edge cutout will be properly animated out when the fab is hidden.
+          if (fab.getShowMotionSpec() == null) {
+            fab.setShowMotionSpecResource(R.animator.mtrl_fab_show_motion_spec);
+          }
+          if (fab.getHideMotionSpec() == null) {
+            fab.setHideMotionSpecResource(R.animator.mtrl_fab_hide_motion_spec);
+          }
 
           // Always update the BAB if the fab is laid out.
           fab.addOnLayoutChangeListener(fabLayoutListener);

@@ -51,9 +51,13 @@
     <attr name="useCompatPadding" format="boolean"/>
     <!-- Maximum icon image size. -->
     <attr name="maxImageSize" format="dimension"/>
-    <!-- Motion spec for show animation. This should be a MotionSpec resource. -->
+    <!-- Motion spec for show animation. This should be a MotionSpec resource.
+         If this attr is set to @null, a default animation will be used which
+         respects duration and easing theme values.-->
     <attr name="showMotionSpec"/>
-    <!-- Motion spec for hide animation. This should be a MotionSpec resource. -->
+    <!-- Motion spec for hide animation. This should be a MotionSpec resource.
+         If this attr is set to @null, a default animation will be used which
+         respects duration and easing theme values.-->
     <attr name="hideMotionSpec"/>
     <!-- Shape appearance style reference for FloatingActionButton. Attribute declaration
          is in the shape package. -->
@@ -92,6 +96,45 @@
   <!-- Style to use for FloatingActionButtons in this theme. -->
   <attr name="floatingActionButtonStyle" format="reference"/>
 
+  <!-- Style to use for Primary FloatingActionButtons in this theme. -->
+  <attr name="floatingActionButtonPrimaryStyle" format="reference"/>
+
+  <!-- Style to use for Secondary FloatingActionButtons in this theme. -->
+  <attr name="floatingActionButtonSecondaryStyle" format="reference"/>
+
+  <!-- Style to use for Tertiary FloatingActionButtons in this theme. -->
+  <attr name="floatingActionButtonTertiaryStyle" format="reference"/>
+
+  <!-- Style to use for Surface FloatingActionButtons in this theme. -->
+  <attr name="floatingActionButtonSurfaceStyle" format="reference"/>
+
+  <!-- Style to use for Large FloatingActionButtons in this theme. -->
+  <attr name="floatingActionButtonLargeStyle" format="reference"/>
+
+  <!-- Style to use for Large Primary color FloatingActionButtons in this theme. -->
+  <attr name="floatingActionButtonLargePrimaryStyle" format="reference"/>
+
+  <!-- Style to use for Large Secondary color FloatingActionButtons in this theme. -->
+  <attr name="floatingActionButtonLargeSecondaryStyle" format="reference"/>
+
+  <!-- Style to use for Large Tertiary color FloatingActionButtons in this theme. -->
+  <attr name="floatingActionButtonLargeTertiaryStyle" format="reference"/>
+
+  <!-- Style to use for Large Surface color FloatingActionButtons in this theme. -->
+  <attr name="floatingActionButtonLargeSurfaceStyle" format="reference"/>
+
   <!-- Style to use for ExtendedFloatingActionButtons in this theme. -->
   <attr name="extendedFloatingActionButtonStyle" format="reference"/>
+
+  <!-- Style to use for Primary ExtendedFloatingActionButtons in this theme. -->
+  <attr name="extendedFloatingActionButtonPrimaryStyle" format="reference"/>
+
+  <!-- Style to use for Secondary ExtendedFloatingActionButtons in this theme. -->
+  <attr name="extendedFloatingActionButtonSecondaryStyle" format="reference"/>
+
+  <!-- Style to use for Tertiary ExtendedFloatingActionButtons in this theme. -->
+  <attr name="extendedFloatingActionButtonTertiaryStyle" format="reference"/>
+
+  <!-- Style to use for Surface ExtendedFloatingActionButtons in this theme. -->
+  <attr name="extendedFloatingActionButtonSurfaceStyle" format="reference"/>
 </resources>

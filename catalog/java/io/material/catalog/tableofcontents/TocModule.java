@@ -18,6 +18,7 @@ package io.material.catalog.tableofcontents;
 
 import dagger.Provides;
 import dagger.android.ContributesAndroidInjector;
+import io.material.catalog.adaptive.AdaptiveFragment;
 import io.material.catalog.application.scope.FragmentScope;
 import io.material.catalog.bottomappbar.BottomAppBarFragment;
 import io.material.catalog.bottomnav.BottomNavigationFragment;
@@ -26,14 +27,17 @@ import io.material.catalog.button.ButtonsFragment;
 import io.material.catalog.card.CardFragment;
 import io.material.catalog.checkbox.CheckBoxFragment;
 import io.material.catalog.chip.ChipFragment;
+import io.material.catalog.color.ColorsFragment;
 import io.material.catalog.datepicker.DatePickerDemoLandingFragment;
 import io.material.catalog.dialog.DialogDemoLandingFragment;
+import io.material.catalog.divider.DividerFragment;
 import io.material.catalog.elevation.ElevationFragment;
 import io.material.catalog.fab.FabFragment;
 import io.material.catalog.font.FontFragment;
 import io.material.catalog.imageview.ShapeableImageViewFragment;
 import io.material.catalog.menu.MenuFragment;
 import io.material.catalog.navigationrail.NavigationRailFragment;
+import io.material.catalog.preferences.CatalogPreferencesDialogFragment;
 import io.material.catalog.progressindicator.ProgressIndicatorFragment;
 import io.material.catalog.radiobutton.RadioButtonFragment;
 import io.material.catalog.shapetheming.ShapeThemingFragment;
@@ -41,9 +45,6 @@ import io.material.catalog.slider.SliderFragment;
 import io.material.catalog.switchmaterial.SwitchFragment;
 import io.material.catalog.tabs.TabsFragment;
 import io.material.catalog.textfield.TextFieldFragment;
-import io.material.catalog.themeswitcher.ThemeAttributeValuesCreator;
-import io.material.catalog.themeswitcher.ThemeSwitcherDialogFragment;
-import io.material.catalog.themeswitcher.ThemeSwitcherResourceProvider;
 import io.material.catalog.timepicker.TimePickerDemoLandingFragment;
 import io.material.catalog.topappbar.TopAppBarFragment;
 import io.material.catalog.transition.TransitionFragment;
@@ -51,6 +52,7 @@ import io.material.catalog.transition.TransitionFragment;
 /** The Dagger module for {@link TocFragment} dependencies. */
 @dagger.Module(
     includes = {
+      AdaptiveFragment.Module.class,
       BottomAppBarFragment.Module.class,
       ButtonsFragment.Module.class,
       BottomNavigationFragment.Module.class,
@@ -58,8 +60,10 @@ import io.material.catalog.transition.TransitionFragment;
       CardFragment.Module.class,
       CheckBoxFragment.Module.class,
       ChipFragment.Module.class,
+      ColorsFragment.Module.class,
       DatePickerDemoLandingFragment.Module.class,
       DialogDemoLandingFragment.Module.class,
+      DividerFragment.Module.class,
       ElevationFragment.Module.class,
       FabFragment.Module.class,
       FontFragment.Module.class,
@@ -82,22 +86,12 @@ public abstract class TocModule {
   @ContributesAndroidInjector
   abstract TocFragment contributeTocFragment();
 
+  @FragmentScope
+  @ContributesAndroidInjector
+  abstract CatalogPreferencesDialogFragment contributeCatalogPreferencesDialogFragment();
+
   @Provides
   static TocResourceProvider provideTocResourceProvider() {
     return new TocResourceProvider();
-  }
-
-  @FragmentScope
-  @ContributesAndroidInjector
-  abstract ThemeSwitcherDialogFragment contributeThemeSwitcherDialogFragment();
-
-  @Provides
-  static ThemeSwitcherResourceProvider provideThemeSwitcherResourceProvider() {
-    return new ThemeSwitcherResourceProvider();
-  }
-
-  @Provides
-  static ThemeAttributeValuesCreator provideThemeAttributeValuesCreator() {
-    return new ThemeAttributeValuesCreator();
   }
 }
