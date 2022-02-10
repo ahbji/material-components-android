@@ -42,6 +42,7 @@
   <string name="cat_textfield_filled_editable_exposed_dropdown_helper_text" translatable="false">Filled editable exposed dropdown menu</string>
   <string name="cat_textfield_legacy_helper_text" translatable="false">Legacy text field</string>
   <string name="cat_textfield_outlined_helper_text" translatable="false">Outlined text field</string>
+  <string name="cat_textfield_outlined_helper_text_without_hint" translatable="false">No hint Outlined text field</string>
   <string name="cat_textfield_outlined_dense_helper_text" translatable="false">Dense outlined text field</string>
   <string name="cat_textfield_outlined_dense_password_helper_text" translatable="false">
     Outlined filled password text field
