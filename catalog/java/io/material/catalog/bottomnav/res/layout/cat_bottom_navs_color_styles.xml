@@ -53,7 +53,7 @@
       android:layout_margin="@dimen/cat_bottom_nav_standard_spacing"
       android:text="@string/cat_bottom_nav_colored_title"/>
   <com.google.android.material.bottomnavigation.BottomNavigationView
-      style="@style/Widget.MaterialComponents.BottomNavigationView.Colored"
+      style="@style/Widget.MaterialComponents.BottomNavigationView.PrimarySurface"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       app:menu="@menu/bottom_nav_menu"/>
