@@ -43,7 +43,7 @@ import com.google.android.material.snackbar.Snackbar;
 import io.material.catalog.R;
 import io.material.catalog.feature.DemoFragment;
 import io.material.catalog.feature.OnBackPressedHandler;
-import io.material.catalog.themeswitcher.ThemeSwitcherHelper;
+import io.material.catalog.preferences.CatalogPreferencesHelper;
 
 /**
  * A fragment that displays the main Bottom App Bar demos for the Catalog app.
@@ -54,8 +54,7 @@ public class BottomAppBarCornerFabDemoFragment extends DemoFragment implements O
   protected CoordinatorLayout coordinatorLayout;
   protected FloatingActionButton fab;
 
-  @Nullable
-  private ThemeSwitcherHelper themeSwitcherHelper;
+  @Nullable private CatalogPreferencesHelper catalogPreferencesHelper;
   private BottomSheetBehavior<View> bottomDrawerBehavior;
 
   @Override
@@ -63,9 +62,9 @@ public class BottomAppBarCornerFabDemoFragment extends DemoFragment implements O
     super.onCreate(bundle);
     setHasOptionsMenu(true);
 
-    // The theme switcher helper is used in an adhoc way with the toolbar since the BottomAppBar is
+    // The preferences helper is used in an adhoc way with the toolbar since the BottomAppBar is
     // set as the action bar.
-    themeSwitcherHelper = new ThemeSwitcherHelper(getParentFragmentManager());
+    catalogPreferencesHelper = new CatalogPreferencesHelper(getParentFragmentManager());
   }
 
   @Override
@@ -91,8 +90,9 @@ public class BottomAppBarCornerFabDemoFragment extends DemoFragment implements O
 
     Toolbar toolbar = view.findViewById(R.id.toolbar);
     toolbar.setTitle(getDefaultDemoTitle());
-    themeSwitcherHelper.onCreateOptionsMenu(toolbar.getMenu(), getActivity().getMenuInflater());
-    toolbar.setOnMenuItemClickListener(themeSwitcherHelper::onOptionsItemSelected);
+    catalogPreferencesHelper.onCreateOptionsMenu(
+        toolbar.getMenu(), getActivity().getMenuInflater());
+    toolbar.setOnMenuItemClickListener(catalogPreferencesHelper::onOptionsItemSelected);
     toolbar.setNavigationOnClickListener(v -> getActivity().onBackPressed());
 
     coordinatorLayout = view.findViewById(R.id.coordinator_layout);
