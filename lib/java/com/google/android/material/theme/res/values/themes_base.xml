@@ -24,7 +24,6 @@
 
     <!-- Color palettes -->
     <item name="colorPrimary">@color/m3_sys_color_light_primary</item>
-    <item name="colorPrimaryDark">?attr/colorPrimary</item>
     <item name="colorOnPrimary">@color/m3_sys_color_light_on_primary</item>
     <item name="colorPrimaryInverse">@color/m3_sys_color_light_inverse_primary</item>
     <item name="colorPrimaryContainer">@color/m3_sys_color_light_primary_container</item>
@@ -51,6 +50,9 @@
     <item name="colorErrorContainer">@color/m3_sys_color_light_error_container</item>
     <item name="colorOnErrorContainer">@color/m3_sys_color_light_on_error_container</item>
 
+    <!-- Framework Colors. -->
+    <item name="android:windowBackground">?android:attr/colorBackground</item>
+
     <!-- Default Framework Text Colors. -->
     <item name="android:textColorPrimary">@color/m3_default_color_primary_text</item>
     <item name="android:textColorPrimaryInverse">@color/m3_dark_default_color_primary_text</item>
@@ -68,6 +70,11 @@
     <item name="android:textColorLinkInverse">?attr/colorPrimaryInverse</item>
     <item name="android:textColorAlertDialogListItem">@color/m3_default_color_primary_text</item>
 
+    <!-- Deprecated Colors. -->
+    <item name="colorPrimaryDark">?attr/colorPrimary</item>
+    <item name="colorPrimaryVariant">?attr/colorPrimary</item>
+    <item name="colorSecondaryVariant">?attr/colorSecondary</item>
+
     <!-- Dialog themes. -->
     <item name="alertDialogTheme">@style/ThemeOverlay.Material3.Dialog.Alert</item>
     <item name="bottomSheetDialogTheme">@style/ThemeOverlay.Material3.BottomSheetDialog</item>
@@ -80,8 +87,6 @@
     <item name="materialTimePickerTheme">@style/ThemeOverlay.Material3.MaterialTimePicker</item>
 
     <!-- Widget styles. -->
-    <item name="actionBarStyle">@style/Widget.Material3.Light.ActionBar.Solid</item>
-    <item name="actionModeStyle">@style/Widget.Material3.ActionMode</item>
     <item name="appBarLayoutStyle">@style/Widget.Material3.AppBarLayout</item>
     <item name="badgeStyle">@style/Widget.Material3.Badge</item>
     <item name="borderlessButtonStyle">@style/Widget.Material3.Button.TextButton</item>
@@ -140,9 +145,14 @@
     <item name="toolbarSurfaceStyle">@style/Widget.Material3.Toolbar.Surface</item>
 
     <!-- Top App Bars. -->
-    <item name="actionBarSize">@dimen/m3_appbar_size_compact</item>
     <item name="collapsingToolbarLayoutMediumSize">@dimen/m3_appbar_size_medium</item>
     <item name="collapsingToolbarLayoutLargeSize">@dimen/m3_appbar_size_large</item>
+
+    <!-- Action Bars. -->
+    <item name="actionBarPopupTheme">@style/ThemeOverlay.Material3.Light</item>
+    <item name="actionBarSize">@dimen/m3_appbar_size_compact</item>
+    <item name="actionBarStyle">@style/Widget.Material3.Light.ActionBar.Solid</item>
+    <item name="actionModeStyle">@style/Widget.Material3.ActionMode</item>
 
     <!-- Popup Menu styles. -->
     <item name="popupMenuBackground">@drawable/m3_popupmenu_background_overlay</item>
@@ -182,8 +192,6 @@
     <!-- Menu type styles. -->
     <item name="textAppearanceLargePopupMenu">?attr/textAppearanceBodyLarge</item>
     <item name="textAppearanceSmallPopupMenu">?attr/textAppearanceBodyLarge</item>
-
-    <!-- TODO: Populate font families here -->
 
     <!-- Shape styles. -->
     <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Material3.SmallComponent</item>
@@ -217,7 +225,6 @@
 
     <!-- Color palettes -->
     <item name="colorPrimary">@color/m3_sys_color_dark_primary</item>
-    <item name="colorPrimaryDark">?attr/colorPrimary</item>
     <item name="colorOnPrimary">@color/m3_sys_color_dark_on_primary</item>
     <item name="colorPrimaryInverse">@color/m3_sys_color_dark_inverse_primary</item>
     <item name="colorPrimaryContainer">@color/m3_sys_color_dark_primary_container</item>
@@ -244,6 +251,9 @@
     <item name="colorErrorContainer">@color/m3_sys_color_dark_error_container</item>
     <item name="colorOnErrorContainer">@color/m3_sys_color_dark_on_error_container</item>
 
+    <!-- Framework Colors. -->
+    <item name="android:windowBackground">?android:attr/colorBackground</item>
+
     <!-- Default Framework Text Colors. -->
     <item name="android:textColorPrimary">@color/m3_dark_default_color_primary_text</item>
     <item name="android:textColorPrimaryInverse">@color/m3_default_color_primary_text</item>
@@ -261,6 +271,11 @@
     <item name="android:textColorLinkInverse">?attr/colorPrimaryInverse</item>
     <item name="android:textColorAlertDialogListItem">@color/m3_dark_default_color_primary_text</item>
 
+    <!-- Deprecated Colors. -->
+    <item name="colorPrimaryDark">?attr/colorPrimary</item>
+    <item name="colorPrimaryVariant">?attr/colorPrimary</item>
+    <item name="colorSecondaryVariant">?attr/colorSecondary</item>
+
     <!-- Dialog themes. -->
     <item name="alertDialogTheme">@style/ThemeOverlay.Material3.Dialog.Alert</item>
     <item name="bottomSheetDialogTheme">@style/ThemeOverlay.Material3.BottomSheetDialog</item>
@@ -273,8 +288,6 @@
     <item name="materialTimePickerTheme">@style/ThemeOverlay.Material3.MaterialTimePicker</item>
 
     <!-- Widget styles. -->
-    <item name="actionBarStyle">@style/Widget.Material3.ActionBar.Solid</item>
-    <item name="actionModeStyle">@style/Widget.Material3.ActionMode</item>
     <item name="appBarLayoutStyle">@style/Widget.Material3.AppBarLayout</item>
     <item name="badgeStyle">@style/Widget.Material3.Badge</item>
     <item name="borderlessButtonStyle">@style/Widget.Material3.Button.TextButton</item>
@@ -333,9 +346,14 @@
     <item name="toolbarSurfaceStyle">@style/Widget.Material3.Toolbar.Surface</item>
 
     <!-- Top App Bars. -->
-    <item name="actionBarSize">@dimen/m3_appbar_size_compact</item>
     <item name="collapsingToolbarLayoutMediumSize">@dimen/m3_appbar_size_medium</item>
     <item name="collapsingToolbarLayoutLargeSize">@dimen/m3_appbar_size_large</item>
+
+    <!-- Action Bars. -->
+    <item name="actionBarPopupTheme">@style/ThemeOverlay.Material3.Dark</item>
+    <item name="actionBarSize">@dimen/m3_appbar_size_compact</item>
+    <item name="actionBarStyle">@style/Widget.Material3.ActionBar.Solid</item>
+    <item name="actionModeStyle">@style/Widget.Material3.ActionMode</item>
 
     <!-- Popup Menu styles. -->
     <item name="popupMenuBackground">@drawable/m3_popupmenu_background_overlay</item>
@@ -375,8 +393,6 @@
     <!-- Menu type styles. -->
     <item name="textAppearanceLargePopupMenu">?attr/textAppearanceBodyLarge</item>
     <item name="textAppearanceSmallPopupMenu">?attr/textAppearanceBodyLarge</item>
-
-    <!-- TODO: Populate font families here -->
 
     <!-- Shape styles. -->
     <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Material3.SmallComponent</item>
@@ -425,6 +441,7 @@
     <item name="actionBarStyle">@style/Widget.MaterialComponents.ActionBar.Surface</item>
     <item name="actionBarTheme">@style/ThemeOverlay.MaterialComponents.ActionBar.Surface</item>
     <item name="actionOverflowMenuStyle">@style/Widget.MaterialComponents.PopupMenu.Overflow</item>
+    <item name="actionModeStyle">@style/Widget.MaterialComponents.ActionMode</item>
 
     <!-- Framework, AppCompat, or Design Widget styles -->
     <item name="appBarLayoutStyle">@style/Widget.MaterialComponents.AppBarLayout.Surface</item>
@@ -487,6 +504,7 @@
     <item name="actionBarPopupTheme">@style/ThemeOverlay.MaterialComponents.Light</item>
     <item name="actionBarStyle">@style/Widget.MaterialComponents.Light.ActionBar.Solid</item>
     <item name="actionOverflowMenuStyle">@style/Widget.MaterialComponents.PopupMenu.Overflow</item>
+    <item name="actionModeStyle">@style/Widget.MaterialComponents.ActionMode</item>
 
     <!-- Framework, AppCompat, or Design Widget styles -->
     <item name="appBarLayoutStyle">@style/Widget.MaterialComponents.AppBarLayout.Primary</item>

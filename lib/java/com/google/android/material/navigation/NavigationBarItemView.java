@@ -29,17 +29,12 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
-import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.core.view.PointerIconCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionItemInfoCompat;
-import androidx.core.widget.TextViewCompat;
 import androidx.appcompat.view.menu.MenuItemImpl;
 import androidx.appcompat.view.menu.MenuView;
 import androidx.appcompat.widget.TooltipCompat;
 import android.text.TextUtils;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,10 +53,18 @@ import androidx.annotation.Px;
 import androidx.annotation.RestrictTo;
 import androidx.annotation.StyleRes;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.view.PointerIconCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionItemInfoCompat;
+import androidx.core.widget.TextViewCompat;
 import com.google.android.material.animation.AnimationUtils;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.badge.BadgeUtils;
 import com.google.android.material.motion.MotionUtils;
+import com.google.android.material.resources.MaterialResources;
 
 /**
  * Provides a view that will be used to render destination items inside a {@link
@@ -213,7 +216,7 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
   /**
    * Remove state so this View can be reused.
    *
-   * Item Views are held in a pool and reused when the number of menu items to be shown changes.
+   * <p>Item Views are held in a pool and reused when the number of menu items to be shown changes.
    * This will be called when this View is released from the pool.
    *
    * @see NavigationBarMenuView#buildMenuView()
@@ -229,8 +232,8 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
    * If this item's layout contains a container which holds the icon and active indicator, return
    * the container. Otherwise, return the icon image view.
    *
-   * This is needed for clients who subclass this view and set their own item layout resource which
-   * might not container an icon container or active indicator view.
+   * <p>This is needed for clients who subclass this view and set their own item layout resource
+   * which might not container an icon container or active indicator view.
    */
   private View getIconOrContainer() {
     return iconContainer != null ? iconContainer : icon;
@@ -370,8 +373,8 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
   /**
    * Refresh the state of this item if it has been initialized.
    *
-   * This is useful if parameters calculated based on this item's checked state (label visibility,
-   * indicator state, iconContainer position) have changed and should be recalculated.
+   * <p>This is useful if parameters calculated based on this item's checked state (label
+   * visibility, indicator state, iconContainer position) have changed and should be recalculated.
    */
   private void refreshChecked() {
     if (itemData != null) {
@@ -620,13 +623,30 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
   }
 
   public void setTextAppearanceInactive(@StyleRes int inactiveTextAppearance) {
-    TextViewCompat.setTextAppearance(smallLabel, inactiveTextAppearance);
+    setTextAppearanceWithoutFontScaling(smallLabel, inactiveTextAppearance);
     calculateTextScaleFactors(smallLabel.getTextSize(), largeLabel.getTextSize());
   }
 
   public void setTextAppearanceActive(@StyleRes int activeTextAppearance) {
-    TextViewCompat.setTextAppearance(largeLabel, activeTextAppearance);
+    setTextAppearanceWithoutFontScaling(largeLabel, activeTextAppearance);
     calculateTextScaleFactors(smallLabel.getTextSize(), largeLabel.getTextSize());
+  }
+
+  /**
+   * Remove font scaling if the text size is in scaled pixels.
+   *
+   * <p>Labels are instead made accessible by showing a scaled tooltip on long press of a
+   * destination. If the given {@code textAppearance} is 0 or does not have a textSize, this method
+   * will not remove the existing scaling from the {@code textView}.
+   */
+  private static void setTextAppearanceWithoutFontScaling(
+      TextView textView, @StyleRes int textAppearance) {
+    TextViewCompat.setTextAppearance(textView, textAppearance);
+    int unscaledSize =
+        MaterialResources.getUnscaledTextSize(textView.getContext(), textAppearance, 0);
+    if (unscaledSize != 0) {
+      textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, unscaledSize);
+    }
   }
 
   public void setTextColor(@Nullable ColorStateList color) {
@@ -697,8 +717,8 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
   }
 
   /**
-   * Update the active indicators width and height for the available width and label
-   * visibility mode.
+   * Update the active indicators width and height for the available width and label visibility
+   * mode.
    *
    * @param availableWidth The total width of this item layout.
    */
@@ -774,6 +794,13 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
   }
 
   void setBadge(@NonNull BadgeDrawable badgeDrawable) {
+    if (this.badgeDrawable == badgeDrawable) {
+      return;
+    }
+    if (hasBadge() && icon != null) {
+      Log.w("NavigationBar", "Multiple badges shouldn't be attached to one item.");
+      tryRemoveBadgeFromAnchor(icon);
+    }
     this.badgeDrawable = badgeDrawable;
     if (icon != null) {
       tryAttachBadgeToAnchor(icon);

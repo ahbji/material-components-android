@@ -75,6 +75,9 @@ content description via the `app:errorContentDescription` attribute or
 `setErrorContentDescription` method. That way the error will announce the
 content description instead of the error message.
 
+**Note:** Icons that don't have click listeners set on them work as decorative
+elements, and are therefore skipped by screen readers.
+
 #### Custom `EditText`
 
 If you are using a custom `EditText` as `TextInputLayout`'s child and your text
@@ -143,7 +146,7 @@ clear the input text.
 
 It is possible to set a custom `Drawable` as the text field's trailing icon via
 `app:endIconMode="custom"`. You should specify a drawable and content
-description for the icon, and, you have the option to specify custom behaviors.
+description for the icon, and you have the option to specify custom behaviors.
 
 In the layout:
 
@@ -190,6 +193,13 @@ textField.addOnEndIconChangedListener {
 **Note:** You should opt to use the `EndIconMode` API instead of setting an
 end/right compound `Drawable` on the `TextInputEditText`. The same applies to
 the now-deprecated `passwordToggle*` attributes.
+
+**Important:** Calling `setEndIconMode` will initialize the icon with its
+default features, such as default drawables, and in the case of the custom mode,
+an empty drawable. You can add customizations after calling `setEndIconMode`.
+The exception for this is if a drawable was specified in XML via the
+`app:endIconDrawable` attribute. An end icon drawable set in XML will take
+precedence and override an existing default icon.
 
 See the full list of
 [end icon modes](https://github.com/material-components/material-components-android/tree/master/lib/java/com/google/android/material/textfield/res/values/attrs.xml#L149).
@@ -316,9 +326,9 @@ The recommended default `android:layout_width` is `245dp`.
 
 By default, text fields have a maximum width of `488dp`, and a minimum width of
 `56dp` for layouts without a label. If a label is present, the minimum width
-recommended is `88dp`. `android:minWidth` and `android:maxWidth` should be set
-on the `TextInputLayout` instead of on the `TextInputEditText` to avoid
-unintended behaviors.
+recommended is `88dp`. `android:minWidth` and `android:maxWidth` (as well as
+`android:minEms` and `android:maxEms`) should be set on the `TextInputLayout`
+instead of on the `TextInputEditText` to avoid unintended behaviors.
 
 You can override those values in a custom style that inherits from a
 `TextInputLayout` style or by making changes directly on the layout:

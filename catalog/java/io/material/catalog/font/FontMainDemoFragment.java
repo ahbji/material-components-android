@@ -21,8 +21,6 @@ import io.material.catalog.R;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Bundle;
-import androidx.core.view.ViewCompat;
-import androidx.core.widget.TextViewCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,6 +36,8 @@ import androidx.annotation.ArrayRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
+import androidx.core.view.ViewCompat;
+import androidx.core.widget.TextViewCompat;
 import com.google.android.material.resources.TextAppearance;
 import com.google.android.material.snackbar.Snackbar;
 import io.material.catalog.feature.DemoFragment;
@@ -85,10 +85,6 @@ public class FontMainDemoFragment extends DemoFragment {
   @ArrayRes
   protected int getFontStyleNames() {
     return R.array.cat_font_style_names_array;
-  }
-
-  protected boolean descriptionAllCaps() {
-    return true;
   }
 
   protected String convertFontFamilyToDescription(String fontFamily) {
@@ -183,7 +179,6 @@ public class FontMainDemoFragment extends DemoFragment {
 
       nameView.setText(name);
       descriptionView.setText(createDescription(name, style));
-      descriptionView.setAllCaps(descriptionAllCaps());
 
       TextViewCompat.setTextAppearance(nameView, style);
     }
