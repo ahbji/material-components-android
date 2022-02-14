@@ -127,6 +127,12 @@ public class TopAppBarFragment extends DemoLandingFragment {
           public Fragment createFragment() {
             return new TopAppBarCollapsingMultilineDemoFragment();
           }
+        },
+        new Demo(R.string.cat_topappbar_collapsing_custom_header_title) {
+          @Override
+          public Fragment createFragment() {
+            return new TopAppBarCollapsingCustomHeaderDemoFragment();
+          }
         });
   }
 
