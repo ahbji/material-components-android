@@ -99,6 +99,7 @@
     <!-- Badge increment button label -->
   <string name="cat_topappbar_edit_menu_toggle" description="The title of a switch to toggle between showing and hiding an edit menu. [CHAR_LIMIT=NONE]">Show edit menu</string>
 
+  <string name="cat_topappbar_custom_header_demo_title">Custom Header Demo</string>
   <string name="cat_topappbar_compress_effect_demo_title">Compress Effect Demo</string>
   <string name="cat_topappbar_compress_toolbar_title">Compress Title</string>
   <string name="cat_topappbar_compress_show_tabs_toggle_label">Show tabs</string>

@@ -46,4 +46,11 @@
     <item name="android:contentDescription">@string/cat_edge_to_edge_enable_description</item>
   </style>
 
+  <style name="Widget.Catalog.CloseFragmentButton" parent="Widget.Catalog.TocButton">
+    <item name="android:id">@id/cat_close_fragment_button</item>
+    <item name="android:layout_gravity">center_vertical|start</item>
+    <item name="srcCompat">@drawable/ic_close_vd_theme_24px</item>
+    <item name="android:contentDescription">@string/cat_close_fragment_button</item>
+  </style>
+
 </resources>
