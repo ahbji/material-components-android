@@ -21,6 +21,10 @@ import io.material.catalog.R;
 import androidx.fragment.app.Fragment;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import dagger.Provides;
 import dagger.android.ContributesAndroidInjector;
 import dagger.multibindings.IntoSet;
@@ -60,6 +64,18 @@ public class MenuFragment extends DemoLandingFragment {
         return menuMainDemoFragment;
       }
     };
+  }
+
+  @Override
+  public List<Demo> getAdditionalDemos() {
+    List<Demo> demoList = new ArrayList<>();
+    demoList.add(new Demo(R.string.exposed_dropdown_menu) {
+      @Override
+      public Fragment createFragment() {
+        return new ExposedDropdownMenuDemoFragment();
+      }
+    });
+    return demoList;
   }
 
   /** The Dagger module for {@link MenuFragment} dependencies. */

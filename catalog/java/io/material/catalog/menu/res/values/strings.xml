@@ -23,6 +23,7 @@
   <string name="menu_with_icons" description="Text to indicate button below shows a menu with icons [CHAR_LIMIT=NONE].">Menu with icons</string>
   <string name="menu" description="Text to indicate button below shows a menu [CHAR_LIMIT=NONE].">Menu</string>
   <string name="context_menu" description="label for section where the context menu is featured [CHAR_LIMIT=20].">Context Menu</string>
+  <string name="exposed_dropdown_menu">Exposed Dropdown Menu</string>
   <string name="list_popup_window" description="Text to indicate button below shows a ListPopupWindow [CHAR_LIMIT=NONE].">ListPopupWindow</string>
   <string name="menu_demo_description">
     Menus within a Material theme will default to a text style of textAppearanceSubtitle1.
