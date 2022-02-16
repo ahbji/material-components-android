@@ -75,6 +75,14 @@ public class MenuFragment extends DemoLandingFragment {
         return new ExposedDropdownMenuDemoFragment();
       }
     });
+    demoList.add(new Demo(R.string.styled_menu) {
+      @Override
+      public Fragment createFragment() {
+        StyledMenuDemoFragment demo = new StyledMenuDemoFragment();
+        demo.setPopupItemLayoutRes(getAdapterItemLayout());
+        return demo;
+      }
+    });
     return demoList;
   }
 
