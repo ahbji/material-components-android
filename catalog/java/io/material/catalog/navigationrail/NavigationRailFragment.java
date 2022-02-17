@@ -69,6 +69,13 @@ public class NavigationRailFragment extends DemoLandingFragment {
   public List<Demo> getAdditionalDemos() {
     List<Demo> additionalDemos = new ArrayList<>();
     additionalDemos.add(
+        new Demo(R.string.cat_navigation_rail_simple_demo_title) {
+          @Override
+          public Fragment createFragment() {
+            return new NavigationRailSimpleDemoFragment();
+          }
+        });
+    additionalDemos.add(
         new Demo(R.string.cat_navigation_rail_additional_controls_demo_title) {
           @Override
           public Fragment createFragment() {
