@@ -29,6 +29,7 @@
   <string name="cat_navigation_rail_animated_demo_title"
           description="Label the navigation rail demo that shows animated icons [CHAR_LIMIT=100]">Animated Demo</string>
   <string name="cat_navigation_rail_simple_demo_title">Simple NavigationRail Demo</string>
+  <string name="cat_navigation_rail_header_demo_title">NavigationRail Header Demo</string>
   <string name="cat_navigation_rail_compact_demo_title"
           description="Label for the demo that shows navigation rail in compact style. [CHAR_LIMIT=100]">Compact Style Demo</string>
 
