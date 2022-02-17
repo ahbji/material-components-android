@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <style name="Widget.App.RadioButton" parent="Widget.MaterialComponents.CompoundButton.RadioButton">
+<!--    <item name="buttonTint">@color/button_tint</item>-->
+    <item name="materialThemeOverlay">@style/ThemeOverlay.App.RadioButton</item>
+  </style>
+
+  <style name="ThemeOverlay.App.RadioButton" parent="">
+    <item name="colorPrimary">@color/green40</item>
+    <item name="colorOnSurface">@color/red_500</item>
+  </style>
+</resources>

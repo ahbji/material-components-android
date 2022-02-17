@@ -18,6 +18,7 @@
 <resources>
 
   <string name="cat_radiobutton_title">Radio Button</string>
+  <string name="cat_styled_radiobutton_demo_title">Styled Radio Button</string>
   <string name="cat_radiobutton_description">
     The RadioButton provides a clickable element, usually part of a RadioButtonGroup. Within a single RadioGroup, only 1 RadioButton can be selected.</string>
   <string name="cat_radiobutton_color_guide">

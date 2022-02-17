@@ -19,6 +19,10 @@ package io.material.catalog.radiobutton;
 import io.material.catalog.R;
 
 import androidx.fragment.app.Fragment;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import dagger.Provides;
 import dagger.android.ContributesAndroidInjector;
 import dagger.multibindings.IntoSet;
@@ -49,6 +53,18 @@ public class RadioButtonFragment extends DemoLandingFragment {
         return new RadioButtonMainDemoFragment();
       }
     };
+  }
+
+  @Override
+  public List<Demo> getAdditionalDemos() {
+    List<Demo> additionalDemos = new ArrayList<>();
+    additionalDemos.add(new Demo(R.string.cat_styled_radiobutton_demo_title) {
+      @Override
+      public Fragment createFragment() {
+        return new StyledRadioButtonDemoFragment();
+      }
+    });
+    return additionalDemos;
   }
 
   /** The Dagger module for {@link RadioButtonFragment} dependencies. */
