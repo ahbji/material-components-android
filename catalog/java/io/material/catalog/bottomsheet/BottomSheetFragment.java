@@ -58,6 +58,13 @@ public class BottomSheetFragment extends DemoLandingFragment {
   public List<Demo> getAdditionalDemos() {
     List<Demo> additionalDemos = new ArrayList<>();
     additionalDemos.add(
+        new Demo(R.string.cat_bottom_sheet_dialog_demo_title) {
+          @Override
+          public Fragment createFragment() {
+            return new BottomSheetDialogDemoFragment();
+          }
+        });
+    additionalDemos.add(
         new Demo(R.string.cat_bottomsheet_scrollable_content_demo_title) {
           @Override
           public Fragment createFragment() {
