@@ -29,6 +29,10 @@
   <string name="cat_bottomsheet_button_text">
     Show Modal BottomSheetDialog
   </string>
+
+  <string name="cat_persistent_bottomsheet_button_text">
+    Show Persistent BottomSheet
+  </string>
   <string name="cat_bottomsheet_state_collapsed" translatable="false">
     STATE_COLLAPSED
   </string>
@@ -49,6 +53,9 @@
   <string name="cat_bottomsheet_button_clicked">Button clicked</string>
   <string name="cat_bottom_sheet_dialog_demo_title">
     BottomSheet Dialog Demo
+  </string>
+  <string name="cat_persistent_bottom_sheet_demo_title">
+    Persistent BottomSheet Demo
   </string>
   <string name="cat_bottomsheet_scrollable_content_demo_title">
     Vertically scrollable content demo

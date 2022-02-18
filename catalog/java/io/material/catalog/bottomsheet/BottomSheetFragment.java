@@ -65,6 +65,13 @@ public class BottomSheetFragment extends DemoLandingFragment {
           }
         });
     additionalDemos.add(
+        new Demo(R.string.cat_persistent_bottom_sheet_demo_title) {
+          @Override
+          public Fragment createFragment() {
+            return new PersistentBottomSheetDemoFragment();
+          }
+        });
+    additionalDemos.add(
         new Demo(R.string.cat_bottomsheet_scrollable_content_demo_title) {
           @Override
           public Fragment createFragment() {
