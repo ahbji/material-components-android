@@ -16,6 +16,7 @@
   -->
 <resources>
   <string name="cat_slider_title" description="Title for the screen that showcases demonstrative usages of the Slider widget">Slider</string>
+  <string name="cat_slider_label_formatter_title">Slider LabelFormatter demo</string>
   <string name="cat_slider_demo_continuous_title" description="Title for the continuous Slider widget demo">Continuous Slider demo</string>
   <string name="cat_slider_demo_discrete_title" description="Title for the discrete Slider widget demo">Discrete Slider demo</string>
   <string name="cat_slider_demo_scroll_container_title" description="Title for the Slider inside scrolling container demo">Slider in scrolling container demo</string>

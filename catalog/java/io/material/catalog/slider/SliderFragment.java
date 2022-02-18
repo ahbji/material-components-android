@@ -57,6 +57,13 @@ public class SliderFragment extends DemoLandingFragment {
   public List<Demo> getAdditionalDemos() {
     List<Demo> additionalDemos = new ArrayList<>();
     additionalDemos.add(
+        new Demo(R.string.cat_slider_label_formatter_title) {
+          @Override
+          public Fragment createFragment() {
+            return new SliderLabelFormatDemoFragment();
+          }
+        });
+    additionalDemos.add(
         new Demo(R.string.cat_slider_demo_continuous_title) {
           @Override
           public Fragment createFragment() {
