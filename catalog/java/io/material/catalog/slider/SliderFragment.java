@@ -84,6 +84,13 @@ public class SliderFragment extends DemoLandingFragment {
             return new SliderScrollContainerDemoFragment();
           }
         });
+    additionalDemos.add(
+        new Demo(R.string.cat_styled_slider_demo_title) {
+          @Override
+          public Fragment createFragment() {
+            return new StyledSliderDemoFragment();
+          }
+        });
     return additionalDemos;
   }
 

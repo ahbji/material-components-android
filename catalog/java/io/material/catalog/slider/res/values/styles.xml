@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <style name="Widget.App.Slider" parent="Widget.Material3.Slider">
+    <item name="materialThemeOverlay">@style/ThemeOverlay.App.Slider</item>
+    <item name="labelStyle">@style/Widget.App.Tooltip</item>
+  </style>
+
+  <style name="ThemeOverlay.App.Slider" parent="">
+    <item name="colorPrimary">@color/green40</item>
+  </style>
+
+  <style name="Widget.App.Tooltip" parent="Widget.Material3.Tooltip">
+    <item name="backgroundTint">@color/red_500</item>
+  </style>
+
+</resources>
