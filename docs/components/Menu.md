@@ -474,9 +474,8 @@ using `Theme.Material3.*` themes.
 
 The following is an example of a filled exposed dropdown menu:
 
-![2 menu states with text field element: 1) has "item 1", 2) has an empty text
-field and a 4-item menu
-container.](assets/menu/menus_exposed_dropdown_filled.png)
+![2 menu states with text field element: 1) has "item 1", 2) has "item 1" and a
+4-item menu container.](assets/menu/menus_exposed_dropdown_filled.png)
 
 In the layout:
 
@@ -492,12 +491,22 @@ In the layout:
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="none"
+        app:simpleItems="@array/simple_items"
     />
 
 </com.google.android.material.textfield.TextInputLayout>
 ```
 
-In code:
+The string array specified by `app:simpleItems` will be used as the default
+item strings for auto-completion. Or you can also set it programmatically:
+
+```kt
+val items = arrayOf("Item 1", "Item 2", "Item 3", "Item 4")
+(textField.editText as? MaterialAutoCompleteTextView)?.setSimpleItems(items)
+```
+
+Alternatively, to have more control over the auto-completion items rendering,
+you can also provide a custom item adapter by:
 
 ```kt
 val items = listOf("Item 1", "Item 2", "Item 3", "Item 4")
@@ -505,7 +514,7 @@ val adapter = ArrayAdapter(requireContext(), R.layout.list_item, items)
 (textField.editText as? AutoCompleteTextView)?.setAdapter(adapter)
 ```
 
-In the item layout (`list_item.xml`):
+And a custom item layout (`list_item.xml`):
 
 ```xml
 <TextView
@@ -553,17 +562,21 @@ The exposed dropdown menu is an `AutoCompleteTextView` within a
 For all attributes that apply to the `TextInputLayout`, see the
 [TextInputLayout documentation](TextField.md).
 
-#### `AutoCompleteTextView` attributes (input text, dropdown menu)
+#### `MaterialAutoCompleteTextView` attributes (input text, dropdown menu)
 
-Element                               | Attribute                                                           | Related method(s)                                            | Default value
-------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------ | -------------
-**Input text**                        | `android:text`                                                      | `setText`<br/>`getText`                                      | `@null`
-**Typography**                        | `android:textAppearance`                                            | `setTextAppearance`                                          | `?attr/textAppearanceBodyLarge`
-**Input accepted**                    | `android:inputType`                                                 | `N/A`                                                        | framework's default
-**Input text color**                  | `android:textColor`                                                 | `setTextColor`<br/>`getTextColors`<br/>`getCurrentTextColor` | `?android:textColorPrimary`
-**Cursor color**                      | N/A (color comes from the theme attr `?attr/colorControlActivated`) | N/A                                                          | `?attr/colorPrimary`
-**Dropdown menu<br/>container color** | N/A                                                                 | N/A                                                          | `?attr/colorSurface`
-**Dropdown menu elevation**           | `android:popupElevation`                                            | N/A                                                          | `8dp`
+Element                                   | Attribute                                                           | Related method(s)                                                             | Default value
+----------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------- | -------------
+**Input text**                            | `android:text`                                                      | `setText`<br/>`getText`                                                       | `@null`
+**Typography**                            | `android:textAppearance`                                            | `setTextAppearance`                                                           | `?attr/textAppearanceBodyLarge`
+**Input accepted**                        | `android:inputType`                                                 | `N/A`                                                                         | framework's default
+**Input text color**                      | `android:textColor`                                                 | `setTextColor`<br/>`getTextColors`<br/>`getCurrentTextColor`                  | `?android:textColorPrimary`
+**Cursor color**                          | N/A (color comes from the theme attr `?attr/colorControlActivated`) | N/A                                                                           | `?attr/colorPrimary`
+**Dropdown menu<br/>container color**     | N/A                                                                 | N/A                                                                           | `?attr/colorSurface`
+**Dropdown menu elevation**               | `android:popupElevation`                                            | `getPopupElevation`                                                           | `3dp`
+**Simple items**                          | `app:simpleItems`                                                   | `setSimpleItems`                                                              | `null`
+**Simple item layout**                    | `app:simpleItemLayout`                                              | N/A                                                                           | `@layout/m3_auto_complete_simple_item`
+**Selected simple item color**            | `app:simpleItemSelectedColor`                                       | `setSimpleItemSelectedColor`<br/>`getSimpleItemSelectedColor`                 | `?attr/colorSurfaceVariant`
+**Selected simple item<br/>ripple color** | `app:simpleItemSelectedRippleColor`                                 | `setSimpleItemSelectedRippleColor`<br/>`getSimpleItemSelectedRippleColor`     | `@color/m3_simple_item_ripple_color`
 
 #### Styles
 

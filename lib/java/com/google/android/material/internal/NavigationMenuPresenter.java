@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RippleDrawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import androidx.appcompat.view.menu.MenuBuilder;
@@ -47,10 +48,12 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.RestrictTo;
 import androidx.annotation.StyleRes;
+import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionInfoCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionItemInfoCompat;
 import androidx.core.widget.TextViewCompat;
 import java.util.ArrayList;
 
@@ -80,6 +83,7 @@ public class NavigationMenuPresenter implements MenuPresenter {
   ColorStateList textColor;
   ColorStateList iconTintList;
   Drawable itemBackground;
+  RippleDrawable itemForeground;
   int itemHorizontalPadding;
   @Px int itemVerticalPadding;
   int itemIconPadding;
@@ -297,6 +301,11 @@ public class NavigationMenuPresenter implements MenuPresenter {
 
   public void setItemBackground(@Nullable Drawable itemBackground) {
     this.itemBackground = itemBackground;
+    updateMenuView(false);
+  }
+
+  public void setItemForeground(@Nullable RippleDrawable itemForeground) {
+    this.itemForeground = itemForeground;
     updateMenuView(false);
   }
 
@@ -573,6 +582,9 @@ public class NavigationMenuPresenter implements MenuPresenter {
             ViewCompat.setBackground(
                 itemView,
                 itemBackground != null ? itemBackground.getConstantState().newDrawable() : null);
+            if (itemForeground != null) {
+              itemView.setForeground(itemForeground.getConstantState().newDrawable());
+            }
             NavigationMenuTextItem item = (NavigationMenuTextItem) items.get(position);
             itemView.setNeedsEmptyIcon(item.needsEmptyIcon);
             itemView.setPadding(
@@ -586,6 +598,7 @@ public class NavigationMenuPresenter implements MenuPresenter {
             }
             itemView.setMaxLines(itemMaxLines);
             itemView.initialize(item.getMenuItem(), 0);
+            setAccessibilityDelegate(itemView, position, false);
             break;
           }
         case VIEW_TYPE_SUBHEADER:
@@ -605,6 +618,7 @@ public class NavigationMenuPresenter implements MenuPresenter {
             if (subheaderColor != null) {
               subHeader.setTextColor(subheaderColor);
             }
+            setAccessibilityDelegate(subHeader, position, true);
             break;
           }
         case VIEW_TYPE_SEPARATOR:
@@ -619,9 +633,44 @@ public class NavigationMenuPresenter implements MenuPresenter {
           }
         case VIEW_TYPE_HEADER:
           {
+            setAccessibilityDelegate(holder.itemView, position, true);
             break;
           }
       }
+    }
+
+    private void setAccessibilityDelegate(View view, int position, boolean isHeader) {
+      ViewCompat.setAccessibilityDelegate(
+          view,
+          new AccessibilityDelegateCompat() {
+            @Override
+            public void onInitializeAccessibilityNodeInfo(
+                @NonNull View host, @NonNull AccessibilityNodeInfoCompat info) {
+              super.onInitializeAccessibilityNodeInfo(host, info);
+              info.setCollectionItemInfo(
+                  CollectionItemInfoCompat.obtain(
+                      /* rowIndex= */ adjustItemPositionForA11yDelegate(position),
+                      /* rowSpan= */ 1,
+                      /* columnIndex =*/ 1,
+                      /* columnSpan= */ 1,
+                      /* heading= */ isHeader,
+                      /* selected= */ host.isSelected()));
+            }
+          });
+    }
+
+    /** Adjusts position based on the presence of separators and header. */
+    private int adjustItemPositionForA11yDelegate(int position) {
+      int adjustedPosition = position;
+      for (int i = 0; i < position; i++) {
+        if (adapter.getItemViewType(i) == VIEW_TYPE_SEPARATOR) {
+          adjustedPosition--;
+        }
+      }
+      if (headerLayout.getChildCount() == 0) { // no header
+        adjustedPosition--;
+      }
+      return adjustedPosition;
     }
 
     @Override
@@ -806,7 +855,8 @@ public class NavigationMenuPresenter implements MenuPresenter {
     int getRowCount() {
       int itemCount = headerLayout.getChildCount() == 0 ? 0 : 1;
       for (int i = 0; i < adapter.getItemCount(); i++) {
-        if (adapter.getItemViewType(i) == VIEW_TYPE_NORMAL) {
+        int type = adapter.getItemViewType(i);
+        if (type == VIEW_TYPE_NORMAL || type == VIEW_TYPE_SUBHEADER) {
           itemCount++;
         }
       }
@@ -870,7 +920,9 @@ public class NavigationMenuPresenter implements MenuPresenter {
     public void onInitializeAccessibilityNodeInfo(
         View host, @NonNull AccessibilityNodeInfoCompat info) {
       super.onInitializeAccessibilityNodeInfo(host, info);
-      info.setCollectionInfo(CollectionInfoCompat.obtain(adapter.getRowCount(), 0, false));
+      info.setCollectionInfo(
+          CollectionInfoCompat.obtain(
+              adapter.getRowCount(), /* columnCount= */ 1, /* hierarchical= */ false));
     }
   }
 }

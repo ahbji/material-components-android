@@ -92,7 +92,6 @@ public final class CollapsingTextHelper {
 
   private final View view;
 
-  private boolean drawTitle;
   private float expandedFraction;
   private boolean fadeModeEnabled;
   private float fadeModeStartFraction;
@@ -125,6 +124,8 @@ public final class CollapsingTextHelper {
   private Typeface currentTypeface;
   private CancelableFontCallback expandedFontCallback;
   private CancelableFontCallback collapsedFontCallback;
+
+  private TruncateAt titleTextEllipsize = TruncateAt.END;
 
   @Nullable private CharSequence text;
   @Nullable private CharSequence textToDraw;
@@ -175,6 +176,7 @@ public final class CollapsingTextHelper {
   private float lineSpacingAdd = StaticLayoutBuilderCompat.DEFAULT_LINE_SPACING_ADD;
   private float lineSpacingMultiplier = StaticLayoutBuilderCompat.DEFAULT_LINE_SPACING_MULTIPLIER;
   private int hyphenationFrequency = StaticLayoutBuilderCompat.DEFAULT_HYPHENATION_FREQUENCY;
+  @Nullable private StaticLayoutBuilderConfigurer staticLayoutBuilderConfigurer;
 
   public CollapsingTextHelper(View view) {
     this.view = view;
@@ -244,7 +246,6 @@ public final class CollapsingTextHelper {
     if (!rectEquals(expandedBounds, left, top, right, bottom)) {
       expandedBounds.set(left, top, right, bottom);
       boundsChanged = true;
-      onBoundsChanged();
     }
   }
 
@@ -256,7 +257,6 @@ public final class CollapsingTextHelper {
     if (!rectEquals(collapsedBounds, left, top, right, bottom)) {
       collapsedBounds.set(left, top, right, bottom);
       boundsChanged = true;
-      onBoundsChanged();
     }
   }
 
@@ -266,9 +266,10 @@ public final class CollapsingTextHelper {
 
   public void getCollapsedTextActualBounds(@NonNull RectF bounds, int labelWidth, int textGravity) {
     isRtl = calculateIsRtl(text);
-    bounds.left = getCollapsedTextLeftBound(labelWidth, textGravity);
+    bounds.left = max(getCollapsedTextLeftBound(labelWidth, textGravity), collapsedBounds.left);
     bounds.top = collapsedBounds.top;
-    bounds.right = getCollapsedTextRightBound(bounds, labelWidth, textGravity);
+    bounds.right =
+        min(getCollapsedTextRightBound(bounds, labelWidth, textGravity), collapsedBounds.right);
     bounds.bottom = collapsedBounds.top + getCollapsedTextHeight();
   }
 
@@ -346,14 +347,6 @@ public final class CollapsingTextHelper {
     if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
       textPaint.setLetterSpacing(collapsedLetterSpacing);
     }
-  }
-
-  void onBoundsChanged() {
-    drawTitle =
-        collapsedBounds.width() > 0
-            && collapsedBounds.height() > 0
-            && expandedBounds.width() > 0
-            && expandedBounds.height() > 0;
   }
 
   public void setExpandedTextGravity(int gravity) {
@@ -445,6 +438,16 @@ public final class CollapsingTextHelper {
     textAppearance.getFontAsync(view.getContext(), expandedFontCallback);
 
     recalculate();
+  }
+
+  public void setTitleTextEllipsize(@NonNull TruncateAt ellipsize) {
+    titleTextEllipsize = ellipsize;
+    recalculate();
+  }
+
+  @NonNull
+  public TruncateAt getTitleTextEllipsize() {
+    return titleTextEllipsize;
   }
 
   public void setCollapsedTypeface(Typeface typeface) {
@@ -710,7 +713,7 @@ public final class CollapsingTextHelper {
     calculateUsingTextSize(/* fraction= */ 1, forceRecalculate);
     if (textToDraw != null && textLayout != null) {
       textToDrawCollapsed =
-          TextUtils.ellipsize(textToDraw, textPaint, textLayout.getWidth(), TruncateAt.END);
+          TextUtils.ellipsize(textToDraw, textPaint, textLayout.getWidth(), titleTextEllipsize);
     }
     if (textToDrawCollapsed != null) {
       collapsedTextWidth = measureTextWidth(textPaint, textToDrawCollapsed);
@@ -827,7 +830,7 @@ public final class CollapsingTextHelper {
   public void draw(@NonNull Canvas canvas) {
     final int saveCount = canvas.save();
     // Compute where to draw textLayout for this frame
-    if (textToDraw != null && drawTitle) {
+    if (textToDraw != null && currentBounds.width() > 0 && currentBounds.height() > 0) {
       textPaint.setTextSize(currentTextSize);
       float x = currentDrawX;
       float y = currentDrawY;
@@ -891,7 +894,7 @@ public final class CollapsingTextHelper {
 
     // Collapsed text
     textPaint.setAlpha((int) (collapsedTextBlend * originalAlpha));
-    // Workaround for API 31(+). Applying the shadow color for collapsed texct.
+    // Workaround for API 31(+). Applying the shadow color for collapsed text.
     if (VERSION.SDK_INT >= VERSION_CODES.S) {
       textPaint.setShadowLayer(
           currentShadowRadius,
@@ -980,24 +983,18 @@ public final class CollapsingTextHelper {
     float availableWidth;
     float newTextSize;
     float newLetterSpacing;
-    boolean updateDrawText = false;
+    Typeface newTypeface;
 
     if (isClose(fraction, /* targetValue= */ 1)) {
       newTextSize = collapsedTextSize;
       newLetterSpacing = collapsedLetterSpacing;
       scale = 1f;
-      if (currentTypeface != collapsedTypeface) {
-        currentTypeface = collapsedTypeface;
-        updateDrawText = true;
-      }
+      newTypeface = collapsedTypeface;
       availableWidth = collapsedWidth;
     } else {
       newTextSize = expandedTextSize;
       newLetterSpacing = expandedLetterSpacing;
-      if (currentTypeface != expandedTypeface) {
-        currentTypeface = expandedTypeface;
-        updateDrawText = true;
-      }
+      newTypeface = expandedTypeface;
       if (isClose(fraction, /* targetValue= */ 0)) {
         // If we're close to the expanded text size, snap to it and use a scale of 1
         scale = 1f;
@@ -1030,13 +1027,26 @@ public final class CollapsingTextHelper {
       }
     }
 
+    boolean updateDrawText;
     if (availableWidth > 0) {
       boolean textSizeChanged = currentTextSize != newTextSize;
       boolean letterSpacingChanged = currentLetterSpacing != newLetterSpacing;
-      updateDrawText = textSizeChanged || letterSpacingChanged || boundsChanged || updateDrawText;
+      boolean typefaceChanged = currentTypeface != newTypeface;
+      boolean availableWidthChanged = textLayout != null && availableWidth != textLayout.getWidth();
+      updateDrawText =
+          textSizeChanged
+              || letterSpacingChanged
+              || availableWidthChanged
+              || typefaceChanged
+              || boundsChanged;
       currentTextSize = newTextSize;
       currentLetterSpacing = newLetterSpacing;
+      currentTypeface = newTypeface;
       boundsChanged = false;
+      // Use linear text scaling if we're scaling the canvas
+      textPaint.setLinearText(scale != 1f);
+    } else {
+      updateDrawText = false;
     }
 
     if (textToDraw == null || updateDrawText) {
@@ -1045,8 +1055,6 @@ public final class CollapsingTextHelper {
       if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
         textPaint.setLetterSpacing(currentLetterSpacing);
       }
-      // Use linear text scaling if we're scaling the canvas
-      textPaint.setLinearText(scale != 1f);
 
       isRtl = calculateIsRtl(text);
       textLayout = createStaticLayout(shouldDrawMultiline() ? maxLines : 1, availableWidth, isRtl);
@@ -1061,13 +1069,14 @@ public final class CollapsingTextHelper {
       Alignment textAlignment = maxLines == 1 ? ALIGN_NORMAL : getMultilineTextLayoutAlignment();
       textLayout =
           StaticLayoutBuilderCompat.obtain(text, textPaint, (int) availableWidth)
-              .setEllipsize(TruncateAt.END)
+              .setEllipsize(titleTextEllipsize)
               .setIsRtl(isRtl)
               .setAlignment(textAlignment)
               .setIncludePad(false)
               .setMaxLines(maxLines)
               .setLineSpacing(lineSpacingAdd, lineSpacingMultiplier)
               .setHyphenationFrequency(hyphenationFrequency)
+              .setStaticLayoutBuilderConfigurer(staticLayoutBuilderConfigurer)
               .build();
     } catch (StaticLayoutBuilderCompatException e) {
       Log.e(TAG, e.getCause().getMessage(), e);
@@ -1211,6 +1220,15 @@ public final class CollapsingTextHelper {
   @RequiresApi(VERSION_CODES.M)
   public int getHyphenationFrequency() {
     return hyphenationFrequency;
+  }
+
+  @RequiresApi(VERSION_CODES.M)
+  public void setStaticLayoutBuilderConfigurer(
+      @Nullable StaticLayoutBuilderConfigurer staticLayoutBuilderConfigurer) {
+    if (this.staticLayoutBuilderConfigurer != staticLayoutBuilderConfigurer) {
+      this.staticLayoutBuilderConfigurer = staticLayoutBuilderConfigurer;
+      recalculate(/* forceRecalculate= */ true);
+    }
   }
 
   /**

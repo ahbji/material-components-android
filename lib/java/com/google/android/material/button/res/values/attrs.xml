@@ -19,6 +19,14 @@
 
   <!-- Style to use for MaterialButtons in this theme. -->
   <attr name="materialButtonStyle" format="reference"/>
+  <!-- Style to use for Material Icon Only Buttons in this theme. -->
+  <attr name="materialIconButtonStyle" format="reference"/>
+  <!-- Style to use for Filled Material Icon Only Buttons in this theme. -->
+  <attr name="materialIconButtonFilledStyle" format="reference"/>
+  <!-- Style to use for Filled Tonal Material Icon Only Buttons in this theme. -->
+  <attr name="materialIconButtonFilledTonalStyle" format="reference"/>
+  <!-- Style to use for Outlined Material Icon Only Buttons in this theme. -->
+  <attr name="materialIconButtonOutlinedStyle" format="reference"/>
   <!-- Style to use for Material Outlined Buttons in this theme. -->
   <attr name="materialButtonOutlinedStyle" format="reference"/>
   <!-- Style to use for MaterialButtonToggleGroups in this theme. -->
@@ -89,6 +97,8 @@
     <!-- Ripple color for the button. This may be a color state list, if the desired ripple color
          should be stateful. Attribute type definition is in resources package. -->
     <attr name="rippleColor"/>
+    <!-- Whether the button toggles the checked state when clicked. -->
+    <attr name="toggleCheckedStateOnClick" format="boolean"/>
   </declare-styleable>
 
   <declare-styleable name="MaterialButtonToggleGroup">

@@ -36,6 +36,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
+import android.text.TextUtils.TruncateAt;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -259,6 +260,13 @@ public class CollapsingToolbarLayout extends FrameLayout {
     if (a.hasValue(R.styleable.CollapsingToolbarLayout_collapsedTitleTextAppearance)) {
       collapsingTextHelper.setCollapsedTextAppearance(
           a.getResourceId(R.styleable.CollapsingToolbarLayout_collapsedTitleTextAppearance, 0));
+    }
+
+    // Now overlay any custom text Ellipsize
+    if (a.hasValue(R.styleable.CollapsingToolbarLayout_titleTextEllipsize)) {
+      setTitleEllipsize(
+          convertEllipsizeToTruncateAt(
+              a.getInt(R.styleable.CollapsingToolbarLayout_titleTextEllipsize, -1)));
     }
 
     if (a.hasValue(R.styleable.CollapsingToolbarLayout_expandedTitleTextColor)) {
@@ -814,6 +822,40 @@ public class CollapsingToolbarLayout extends FrameLayout {
     return collapsingTitleEnabled;
   }
 
+
+  /**
+   * Set ellipsizing on the title text.
+   *
+   * @param ellipsize type of ellipsis behavior
+   * @attr ref R.styleable#CollapsingToolbarLayout_titleTextEllipsize
+   */
+  public void setTitleEllipsize(@NonNull TruncateAt ellipsize) {
+    collapsingTextHelper.setTitleTextEllipsize(ellipsize);
+  }
+
+  /**
+   * Get ellipsizing currently applied on the title text.
+   */
+  @NonNull
+  public TruncateAt getTitleTextEllipsize() {
+    return collapsingTextHelper.getTitleTextEllipsize();
+  }
+
+  // Convert to supported TruncateAt values
+  private TruncateAt convertEllipsizeToTruncateAt(int ellipsize) {
+    switch (ellipsize) {
+      case 0:
+        return TruncateAt.START;
+      case 1:
+        return TruncateAt.MIDDLE;
+      case 3:
+        return TruncateAt.MARQUEE;
+      case 2:
+      default:
+        return TruncateAt.END;
+    }
+  }
+
   /**
    * Set whether the content scrim and/or status bar scrim should be shown or not. Any change in the
    * vertical scroll may overwrite this value. Any visibility change will be animated if this view
@@ -1357,6 +1399,24 @@ public class CollapsingToolbarLayout extends FrameLayout {
   }
 
   /**
+   * Sets the {@link StaticLayoutBuilderConfigurer} for the {@link android.text.StaticLayout} of the
+   * title text.
+   *
+   * <p>Note that the updates to the {@link android.text.StaticLayout.Builder} in the configure
+   * method (e.g., the text, alignment, max lines, line spacing, etc.) will take precedence over and
+   * overwrite any previous configurations made by the {@link CollapsingToolbarLayout} to the same
+   * properties.
+   *
+   * @hide
+   */
+  @RestrictTo(LIBRARY_GROUP)
+  @RequiresApi(VERSION_CODES.M)
+  public void setStaticLayoutBuilderConfigurer(
+      @Nullable StaticLayoutBuilderConfigurer staticLayoutBuilderConfigurer) {
+    collapsingTextHelper.setStaticLayoutBuilderConfigurer(staticLayoutBuilderConfigurer);
+  }
+
+  /**
    * Sets whether {@code TextDirectionHeuristics} should be used to determine whether the title text
    * is RTL. Experimental Feature.
    */
@@ -1575,6 +1635,14 @@ public class CollapsingToolbarLayout extends FrameLayout {
       super(source);
     }
 
+    @RequiresApi(19)
+    public LayoutParams(@NonNull LayoutParams source) {
+      // The copy constructor called here only exists on API 19+.
+      super(source);
+      collapseMode = source.collapseMode;
+      parallaxMult = source.parallaxMult;
+    }
+
     /**
      * Set the collapse mode.
      *
@@ -1682,4 +1750,15 @@ public class CollapsingToolbarLayout extends FrameLayout {
       collapsingTextHelper.setExpansionFraction(Math.abs(verticalOffset) / (float) expandRange);
     }
   }
+
+  /**
+   * Interface that allows for further customization of the provided {@link
+   * android.text.StaticLayout}.
+   *
+   * @hide
+   */
+  @RestrictTo(LIBRARY_GROUP)
+  @RequiresApi(VERSION_CODES.M)
+  public interface StaticLayoutBuilderConfigurer
+      extends com.google.android.material.internal.StaticLayoutBuilderConfigurer {}
 }

@@ -107,7 +107,8 @@ public final class IndeterminateDrawable<S extends BaseProgressIndicatorSpec>
         animatorDurationScaleProvider.getSystemAnimatorDurationScale(context.getContentResolver());
     if (visible
         && (animate
-            || (VERSION.SDK_INT <= VERSION_CODES.LOLLIPOP && systemAnimatorDurationScale > 0))) {
+            || (VERSION.SDK_INT <= VERSION_CODES.LOLLIPOP_MR1
+                && systemAnimatorDurationScale > 0))) {
       animatorDelegate.startAnimator();
     }
 
@@ -137,7 +138,7 @@ public final class IndeterminateDrawable<S extends BaseProgressIndicatorSpec>
     }
 
     canvas.save();
-    drawingDelegate.validateSpecAndAdjustCanvas(canvas, getGrowFraction());
+    drawingDelegate.validateSpecAndAdjustCanvas(canvas, getBounds(), getGrowFraction());
 
     // Draws the track.
     drawingDelegate.fillTrack(canvas, paint);

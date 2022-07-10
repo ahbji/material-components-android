@@ -19,11 +19,13 @@ package com.google.android.material.internal;
 import com.google.android.material.R;
 
 import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
+import static androidx.core.content.ContextCompat.getSystemService;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
@@ -94,6 +96,13 @@ public class ViewUtils {
             inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
           }
         });
+  }
+
+  public static void hideKeyboard(@NonNull final View view) {
+    InputMethodManager imm = getSystemService(view.getContext(), InputMethodManager.class);
+    if (imm != null) {
+      imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
   }
 
   /**
@@ -338,5 +347,15 @@ public class ViewUtils {
     } else {
       viewTreeObserver.removeGlobalOnLayoutListener(victim);
     }
+  }
+
+  /**
+   * Returns the provided view's background color, if it has ColorDrawable as its background, or
+   * {@code null} if the background has a different drawable type.
+   */
+  @Nullable
+  public static Integer getBackgroundColor(@NonNull View view) {
+    return view.getBackground() instanceof ColorDrawable
+        ? ((ColorDrawable) view.getBackground()).getColor() : null;
   }
 }

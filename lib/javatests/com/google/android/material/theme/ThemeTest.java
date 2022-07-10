@@ -16,7 +16,7 @@
 
 package com.google.android.material.theme;
 
-import com.google.android.material.R;
+import com.google.android.material.test.R;
 
 import static android.os.Build.VERSION_CODES.LOLLIPOP;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
@@ -125,7 +125,7 @@ public class ThemeTest {
   /**
    * There are color attributes that all theme overlays should have.
    *
-   * <p>All Light theme overlays shold match {@code Theme.MaterialComponents.Light} and all Dark
+   * <p>All Light theme overlays should match {@code Theme.MaterialComponents.Light} and all Dark
    * theme overlays should match {@code Theme.MaterialComponents}.
    */
   private static final ImmutableList<Integer> MATERIAL_OVERLAY_COLOR_ATTRIBUTES =
@@ -343,6 +343,7 @@ public class ThemeTest {
           R.attr.borderlessButtonStyle,
           R.attr.bottomAppBarStyle,
           R.attr.bottomNavigationStyle,
+          R.attr.bottomSheetDragHandleStyle,
           R.attr.buttonBarButtonStyle,
           R.attr.checkboxStyle,
           R.attr.chipStyle,
@@ -362,18 +363,25 @@ public class ThemeTest {
           R.attr.floatingActionButtonSecondaryStyle,
           R.attr.floatingActionButtonTertiaryStyle,
           R.attr.floatingActionButtonSurfaceStyle,
+          R.attr.floatingActionButtonSmallStyle,
+          R.attr.floatingActionButtonSmallPrimaryStyle,
+          R.attr.floatingActionButtonSmallSecondaryStyle,
+          R.attr.floatingActionButtonSmallTertiaryStyle,
+          R.attr.floatingActionButtonSmallSurfaceStyle,
           R.attr.floatingActionButtonLargeStyle,
           R.attr.floatingActionButtonLargePrimaryStyle,
           R.attr.floatingActionButtonLargeSecondaryStyle,
           R.attr.floatingActionButtonLargeTertiaryStyle,
           R.attr.floatingActionButtonLargeSurfaceStyle,
           R.attr.linearProgressIndicatorStyle,
+          R.attr.materialIconButtonStyle,
           R.attr.materialButtonOutlinedStyle,
           R.attr.materialButtonStyle,
           R.attr.materialCardViewStyle,
           R.attr.materialCardViewOutlinedStyle,
           R.attr.materialCardViewFilledStyle,
           R.attr.materialCardViewElevatedStyle,
+          R.attr.materialSwitchStyle,
           R.attr.radioButtonStyle,
           R.attr.sliderStyle,
           R.attr.snackbarStyle,

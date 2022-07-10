@@ -22,18 +22,13 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
-import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.widget.EditText;
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.google.android.material.animation.AnimationUtils;
-import com.google.android.material.textfield.TextInputLayout.OnEditTextAttachedListener;
-import com.google.android.material.textfield.TextInputLayout.OnEndIconChangedListener;
 
 /** Default initialization of the clear text end icon {@link TextInputLayout.EndIconMode}. */
 class ClearTextEndIconDelegate extends EndIconDelegate {
@@ -42,110 +37,93 @@ class ClearTextEndIconDelegate extends EndIconDelegate {
   private static final int ANIMATION_SCALE_DURATION = 150;
   private static final float ANIMATION_SCALE_FROM_VALUE = 0.8f;
 
-  private final TextWatcher clearTextEndIconTextWatcher =
-      new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+  @Nullable
+  private EditText editText;
 
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {}
+  private final OnClickListener onIconClickListener = view -> {
+    if (editText == null) {
+      return;
+    }
+    Editable text = editText.getText();
+    if (text != null) {
+      text.clear();
+    }
+    refreshIconState();
+  };
 
-        @Override
-        public void afterTextChanged(@NonNull Editable s) {
-          if (textInputLayout.getSuffixText() != null) {
-            return;
-          }
-          animateIcon(shouldBeVisible());
-        }
-      };
   private final OnFocusChangeListener onFocusChangeListener =
-      new OnFocusChangeListener() {
-        @Override
-        public void onFocusChange(View v, boolean hasFocus) {
-          animateIcon(shouldBeVisible());
-        }
-      };
-  private final OnEditTextAttachedListener clearTextOnEditTextAttachedListener =
-      new OnEditTextAttachedListener() {
-        @Override
-        public void onEditTextAttached(@NonNull TextInputLayout textInputLayout) {
-          EditText editText = textInputLayout.getEditText();
-          textInputLayout.setEndIconVisible(shouldBeVisible());
-          editText.setOnFocusChangeListener(onFocusChangeListener);
-          endIconView.setOnFocusChangeListener(onFocusChangeListener);
-          // Make sure there's always only one clear text text watcher added
-          editText.removeTextChangedListener(clearTextEndIconTextWatcher);
-          editText.addTextChangedListener(clearTextEndIconTextWatcher);
-        }
-      };
-  private final OnEndIconChangedListener endIconChangedListener =
-      new OnEndIconChangedListener() {
-        @Override
-        public void onEndIconChanged(@NonNull TextInputLayout textInputLayout, int previousIcon) {
-          final EditText editText = textInputLayout.getEditText();
-          if (editText != null && previousIcon == TextInputLayout.END_ICON_CLEAR_TEXT) {
-            // Remove any listeners set on the edit text.
-            editText.post(
-                new Runnable() {
-                  @Override
-                  public void run() {
-                    editText.removeTextChangedListener(clearTextEndIconTextWatcher);
-                    // Make sure icon view is visible.
-                    animateIcon(/* show= */ true);
-                  }
-                });
-            if (editText.getOnFocusChangeListener() == onFocusChangeListener) {
-              editText.setOnFocusChangeListener(null);
-            }
-            if (endIconView.getOnFocusChangeListener() == onFocusChangeListener) {
-              endIconView.setOnFocusChangeListener(null);
-            }
-          }
-        }
-      };
+      (view, hasFocus) -> animateIcon(shouldBeVisible());
 
   private AnimatorSet iconInAnim;
   private ValueAnimator iconOutAnim;
 
-  ClearTextEndIconDelegate(
-      @NonNull TextInputLayout textInputLayout, @DrawableRes int customEndIcon) {
-    super(textInputLayout, customEndIcon);
+  ClearTextEndIconDelegate(@NonNull EndCompoundLayout endLayout) {
+    super(endLayout);
   }
 
   @Override
-  void initialize() {
-    textInputLayout.setEndIconDrawable(
-        customEndIcon == 0 ? R.drawable.mtrl_ic_cancel : customEndIcon);
-    textInputLayout.setEndIconContentDescription(
-        textInputLayout.getResources().getText(R.string.clear_text_end_icon_content_description));
-    textInputLayout.setEndIconCheckable(false);
-    textInputLayout.setEndIconOnClickListener(
-        new OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            Editable text = textInputLayout.getEditText().getText();
-            if (text != null) {
-              text.clear();
-            }
-
-            textInputLayout.refreshEndIconDrawableState();
-          }
-        });
-    textInputLayout.addOnEditTextAttachedListener(clearTextOnEditTextAttachedListener);
-    textInputLayout.addOnEndIconChangedListener(endIconChangedListener);
+  void setUp() {
     initAnimators();
   }
 
   @Override
+  void tearDown() {
+    if (editText != null) {
+      editText.post(() ->
+        // Make sure icon view is visible.
+        animateIcon(/* show= */ true));
+    }
+  }
+
+  @Override
+  int getIconDrawableResId() {
+    return R.drawable.mtrl_ic_cancel;
+  }
+
+  @Override
+  int getIconContentDescriptionResId() {
+    return R.string.clear_text_end_icon_content_description;
+  }
+
+  @Override
   void onSuffixVisibilityChanged(boolean visible) {
-    if (textInputLayout.getSuffixText() == null) {
+    if (endLayout.getSuffixText() == null) {
       return;
     }
     animateIcon(visible);
   }
 
+  @Override
+  OnClickListener getOnIconClickListener() {
+    return onIconClickListener;
+  }
+
+  @Override
+  public void onEditTextAttached(@Nullable EditText editText) {
+    this.editText = editText;
+    textInputLayout.setEndIconVisible(shouldBeVisible());
+  }
+
+  @Override
+  void afterEditTextChanged(@NonNull Editable s) {
+    if (endLayout.getSuffixText() != null) {
+      return;
+    }
+    animateIcon(shouldBeVisible());
+  }
+
+  @Override
+  OnFocusChangeListener getOnEditTextFocusChangeListener() {
+    return onFocusChangeListener;
+  }
+
+  @Override
+  OnFocusChangeListener getOnIconViewFocusChangeListener() {
+    return onFocusChangeListener;
+  }
+
   private void animateIcon(boolean show) {
-    boolean shouldSkipAnimation = textInputLayout.isEndIconVisible() == show;
+    boolean shouldSkipAnimation = endLayout.isEndIconVisible() == show;
     if (show && !iconInAnim.isRunning()) {
       iconOutAnim.cancel();
       iconInAnim.start();
@@ -170,7 +148,7 @@ class ClearTextEndIconDelegate extends EndIconDelegate {
         new AnimatorListenerAdapter() {
           @Override
           public void onAnimationStart(Animator animation) {
-            textInputLayout.setEndIconVisible(true);
+            endLayout.setEndIconVisible(true);
           }
         });
     iconOutAnim = getAlphaAnimator(1, 0);
@@ -178,7 +156,7 @@ class ClearTextEndIconDelegate extends EndIconDelegate {
         new AnimatorListenerAdapter() {
           @Override
           public void onAnimationEnd(Animator animation) {
-            textInputLayout.setEndIconVisible(false);
+            endLayout.setEndIconVisible(false);
           }
         });
   }
@@ -187,14 +165,10 @@ class ClearTextEndIconDelegate extends EndIconDelegate {
     ValueAnimator animator = ValueAnimator.ofFloat(values);
     animator.setInterpolator(AnimationUtils.LINEAR_INTERPOLATOR);
     animator.setDuration(ANIMATION_FADE_DURATION);
-    animator.addUpdateListener(
-        new AnimatorUpdateListener() {
-          @Override
-          public void onAnimationUpdate(@NonNull ValueAnimator animation) {
-            float alpha = (float) animation.getAnimatedValue();
-            endIconView.setAlpha(alpha);
-          }
-        });
+    animator.addUpdateListener(animation -> {
+      float alpha = (float) animation.getAnimatedValue();
+      endIconView.setAlpha(alpha);
+    });
 
     return animator;
   }
@@ -203,20 +177,15 @@ class ClearTextEndIconDelegate extends EndIconDelegate {
     ValueAnimator animator = ValueAnimator.ofFloat(ANIMATION_SCALE_FROM_VALUE, 1);
     animator.setInterpolator(AnimationUtils.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
     animator.setDuration(ANIMATION_SCALE_DURATION);
-    animator.addUpdateListener(
-        new AnimatorUpdateListener() {
-          @Override
-          public void onAnimationUpdate(@NonNull ValueAnimator animation) {
-            float scale = (float) animation.getAnimatedValue();
-            endIconView.setScaleX(scale);
-            endIconView.setScaleY(scale);
-          }
-        });
+    animator.addUpdateListener(animation -> {
+      float scale = (float) animation.getAnimatedValue();
+      endIconView.setScaleX(scale);
+      endIconView.setScaleY(scale);
+    });
     return animator;
   }
 
   private boolean shouldBeVisible() {
-    EditText editText = textInputLayout.getEditText();
     return editText != null
         && (editText.hasFocus() || endIconView.hasFocus())
         && editText.getText().length() > 0;

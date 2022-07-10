@@ -22,30 +22,26 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.content.Context;
-import android.content.res.Resources.Theme;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
-import android.view.View;
-import android.view.Window;
 import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
+import androidx.core.os.BuildCompat;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Utility for applying dynamic colors to application/activities.
- */
+/** Utility for applying dynamic colors to application/activities. */
 public class DynamicColors {
   private static final int[] DYNAMIC_COLOR_THEME_OVERLAY_ATTRIBUTE =
-      new int[] { R.attr.dynamicColorThemeOverlay };
+      new int[] {R.attr.dynamicColorThemeOverlay};
 
   private static final DeviceSupportCondition DEFAULT_DEVICE_SUPPORT_CONDITION =
       new DeviceSupportCondition() {
@@ -79,24 +75,28 @@ public class DynamicColors {
 
   static {
     Map<String, DeviceSupportCondition> deviceMap = new HashMap<>();
+    deviceMap.put("google", DEFAULT_DEVICE_SUPPORT_CONDITION);
+    deviceMap.put("hmd global", DEFAULT_DEVICE_SUPPORT_CONDITION);
+    deviceMap.put("infinix", DEFAULT_DEVICE_SUPPORT_CONDITION);
+    deviceMap.put("infinix mobility limited", DEFAULT_DEVICE_SUPPORT_CONDITION);
+    deviceMap.put("itel", DEFAULT_DEVICE_SUPPORT_CONDITION);
+    deviceMap.put("kyocera", DEFAULT_DEVICE_SUPPORT_CONDITION);
+    deviceMap.put("lenovo", DEFAULT_DEVICE_SUPPORT_CONDITION);
+    deviceMap.put("lge", DEFAULT_DEVICE_SUPPORT_CONDITION);
+    deviceMap.put("motorola", DEFAULT_DEVICE_SUPPORT_CONDITION);
+    deviceMap.put("nothing", DEFAULT_DEVICE_SUPPORT_CONDITION);
+    deviceMap.put("oneplus", DEFAULT_DEVICE_SUPPORT_CONDITION);
     deviceMap.put("oppo", DEFAULT_DEVICE_SUPPORT_CONDITION);
     deviceMap.put("realme", DEFAULT_DEVICE_SUPPORT_CONDITION);
-    deviceMap.put("oneplus", DEFAULT_DEVICE_SUPPORT_CONDITION);
-    deviceMap.put("vivo", DEFAULT_DEVICE_SUPPORT_CONDITION);
-    deviceMap.put("xiaomi", DEFAULT_DEVICE_SUPPORT_CONDITION);
-    deviceMap.put("motorola", DEFAULT_DEVICE_SUPPORT_CONDITION);
-    deviceMap.put("itel", DEFAULT_DEVICE_SUPPORT_CONDITION);
-    deviceMap.put("tecno mobile limited", DEFAULT_DEVICE_SUPPORT_CONDITION);
-    deviceMap.put("infinix mobility limited", DEFAULT_DEVICE_SUPPORT_CONDITION);
-    deviceMap.put("hmd global", DEFAULT_DEVICE_SUPPORT_CONDITION);
+    deviceMap.put("robolectric", DEFAULT_DEVICE_SUPPORT_CONDITION);
+    deviceMap.put("samsung", SAMSUNG_DEVICE_SUPPORT_CONDITION);
     deviceMap.put("sharp", DEFAULT_DEVICE_SUPPORT_CONDITION);
     deviceMap.put("sony", DEFAULT_DEVICE_SUPPORT_CONDITION);
     deviceMap.put("tcl", DEFAULT_DEVICE_SUPPORT_CONDITION);
-    deviceMap.put("lenovo", DEFAULT_DEVICE_SUPPORT_CONDITION);
-    deviceMap.put("lge", DEFAULT_DEVICE_SUPPORT_CONDITION);
-    deviceMap.put("google", DEFAULT_DEVICE_SUPPORT_CONDITION);
-    deviceMap.put("robolectric", DEFAULT_DEVICE_SUPPORT_CONDITION);
-    deviceMap.put("samsung", SAMSUNG_DEVICE_SUPPORT_CONDITION);
+    deviceMap.put("tecno", DEFAULT_DEVICE_SUPPORT_CONDITION);
+    deviceMap.put("tecno mobile limited", DEFAULT_DEVICE_SUPPORT_CONDITION);
+    deviceMap.put("vivo", DEFAULT_DEVICE_SUPPORT_CONDITION);
+    deviceMap.put("xiaomi", DEFAULT_DEVICE_SUPPORT_CONDITION);
     DYNAMIC_COLOR_SUPPORTED_MANUFACTURERS = Collections.unmodifiableMap(deviceMap);
   }
 
@@ -111,13 +111,6 @@ public class DynamicColors {
 
   private static final int USE_DEFAULT_THEME_OVERLAY = 0;
 
-  private static final Precondition ALWAYS_ALLOW = new Precondition() {
-    @Override
-    public boolean shouldApplyDynamicColors(@NonNull Activity activity, int theme) {
-      return true;
-    }
-  };
-
   private DynamicColors() {}
 
   /**
@@ -125,27 +118,28 @@ public class DynamicColors {
    * attribute {@code dynamicColorThemeOverlay} by registering a {@link ActivityLifecycleCallbacks}
    * to your application.
    *
-   * @see #applyToActivitiesIfAvailable(Application, int, Precondition) for more detailed info and
-   *     examples.
+   * @see #applyToActivitiesIfAvailable(Application, DynamicColorsOptions) for more detailed info
+   *     and examples.
    * @param application The target application.
    */
   public static void applyToActivitiesIfAvailable(@NonNull Application application) {
-    applyToActivitiesIfAvailable(application, USE_DEFAULT_THEME_OVERLAY);
+    applyToActivitiesIfAvailable(application, new DynamicColorsOptions.Builder().build());
   }
 
   /**
-   * Applies dynamic colors to all activities with the given theme overlay by registering a
-   * {@link ActivityLifecycleCallbacks} to your application.
-   *
-   * @see #applyToActivitiesIfAvailable(Application, int, Precondition) for more detailed info and
-   *      examples.
+   * Applies dynamic colors to all activities with the given theme overlay by registering a {@link
+   * ActivityLifecycleCallbacks} to your application.
    *
    * @param application The target application.
    * @param theme The resource ID of the theme overlay that provides dynamic color definition.
+   * @deprecated Use {@link #applyToActivitiesIfAvailable(Application, DynamicColorsOptions)}
+   *     instead.
    */
+  @Deprecated
   public static void applyToActivitiesIfAvailable(
       @NonNull Application application, @StyleRes int theme) {
-    applyToActivitiesIfAvailable(application, theme, ALWAYS_ALLOW);
+    applyToActivitiesIfAvailable(
+        application, new DynamicColorsOptions.Builder().setThemeOverlay(theme).build());
   }
 
   /**
@@ -153,22 +147,46 @@ public class DynamicColors {
    * attribute {@code dynamicColorThemeOverlay} according to the given precondition by registering a
    * {@link ActivityLifecycleCallbacks} to your application.
    *
-   * @see #applyToActivitiesIfAvailable(Application, int, Precondition) for more detailed info and
-   *     examples.
    * @param application The target application.
    * @param precondition The precondition to decide if dynamic colors should be applied.
+   * @deprecated Use {@link #applyToActivitiesIfAvailable(Application, DynamicColorsOptions)}
+   *     instead.
    */
+  @Deprecated
   public static void applyToActivitiesIfAvailable(
       @NonNull Application application, @NonNull Precondition precondition) {
-    applyToActivitiesIfAvailable(application, USE_DEFAULT_THEME_OVERLAY, precondition);
+    applyToActivitiesIfAvailable(
+        application, new DynamicColorsOptions.Builder().setPrecondition(precondition).build());
   }
 
   /**
    * Applies dynamic colors to all activities with the given theme overlay according to the given
    * precondition by registering a {@link ActivityLifecycleCallbacks} to your application.
    *
-   * A normal usage of this method should happen only once in {@link Application#onCreate()} or any
-   * methods that run before any of your activities are created. For example:
+   * @param application The target application.
+   * @param theme The resource ID of the theme overlay that provides dynamic color definition.
+   * @param precondition The precondition to decide if dynamic colors should be applied.
+   * @deprecated Use {@link #applyToActivitiesIfAvailable(Application, DynamicColorsOptions)}
+   *     instead.
+   */
+  @Deprecated
+  public static void applyToActivitiesIfAvailable(
+      @NonNull Application application, @StyleRes int theme, @NonNull Precondition precondition) {
+    applyToActivitiesIfAvailable(
+        application,
+        new DynamicColorsOptions.Builder()
+            .setThemeOverlay(theme)
+            .setPrecondition(precondition)
+            .build());
+  }
+
+  /**
+   * Applies dynamic colors to all activities based on the provided {@link DynamicColorsOptions}, by
+   * registering a {@link ActivityLifecycleCallbacks} to your application.
+   *
+   * <p>A normal usage of this method should happen only once in {@link Application#onCreate()} or
+   * any methods that run before any of your activities are created. For example:
+   *
    * <pre>
    * public class YourApplication extends Application {
    *   &#64;Override
@@ -178,19 +196,21 @@ public class DynamicColors {
    *   }
    * }
    * </pre>
-   * This method will try to apply the given dynamic color theme overlay in every activity's
-   * {@link ActivityLifecycleCallbacks#onActivityPreCreated(Activity, Bundle)} callback. Therefore,
-   * if you are applying any other theme overlays after that, you will need to be careful about not
+   *
+   * This method will try to apply the given dynamic color theme overlay in every activity's {@link
+   * ActivityLifecycleCallbacks#onActivityPreCreated(Activity, Bundle)} callback. Therefore, if you
+   * are applying any other theme overlays after that, you will need to be careful about not
    * overriding the colors or you may lose the dynamic color support.
    *
    * @param application The target application.
-   * @param theme The resource ID of the theme overlay that provides dynamic color definition.
-   * @param precondition The precondition to decide if dynamic colors should be applied.
+   * @param dynamicColorsOptions The dynamic colors options object that specifies the theme resource
+   *     ID, precondition to decide if dynamic colors should be applied and the callback function
+   *     for after dynamic colors have been applied.
    */
   public static void applyToActivitiesIfAvailable(
-      @NonNull Application application, @StyleRes int theme, @NonNull Precondition precondition) {
+      @NonNull Application application, @NonNull DynamicColorsOptions dynamicColorsOptions) {
     application.registerActivityLifecycleCallbacks(
-        new DynamicColorsActivityLifecycleCallbacks(theme, precondition));
+        new DynamicColorsActivityLifecycleCallbacks(dynamicColorsOptions));
   }
 
   /**
@@ -198,9 +218,11 @@ public class DynamicColors {
    * attribute {@code dynamicColorThemeOverlay}.
    *
    * @param activity The target activity.
+   * @deprecated Use {@link #applyToActivityIfAvailable(Activity)} instead.
    */
+  @Deprecated
   public static void applyIfAvailable(@NonNull Activity activity) {
-    applyIfAvailable(activity, USE_DEFAULT_THEME_OVERLAY);
+    applyToActivityIfAvailable(activity);
   }
 
   /**
@@ -208,9 +230,12 @@ public class DynamicColors {
    *
    * @param activity The target activity.
    * @param theme The resource ID of the theme overlay that provides dynamic color definition.
+   * @deprecated Use {@link #applyToActivityIfAvailable(Activity, DynamicColorsOptions)} instead.
    */
+  @Deprecated
   public static void applyIfAvailable(@NonNull Activity activity, @StyleRes int theme) {
-    applyIfAvailable(activity, theme, ALWAYS_ALLOW);
+    applyToActivityIfAvailable(
+        activity, new DynamicColorsOptions.Builder().setThemeOverlay(theme).build());
   }
 
   /**
@@ -219,14 +244,47 @@ public class DynamicColors {
    *
    * @param activity The target activity.
    * @param precondition The precondition to decide if dynamic colors should be applied.
+   * @deprecated Use {@link #applyToActivityIfAvailable(Activity, DynamicColorsOptions)} instead.
    */
+  @Deprecated
   public static void applyIfAvailable(
       @NonNull Activity activity, @NonNull Precondition precondition) {
-    applyIfAvailable(activity, USE_DEFAULT_THEME_OVERLAY, precondition);
+    applyToActivityIfAvailable(
+        activity, new DynamicColorsOptions.Builder().setPrecondition(precondition).build());
   }
 
-  private static void applyIfAvailable(
-      @NonNull Activity activity, @StyleRes int theme, @NonNull Precondition precondition) {
+  /**
+   * Applies dynamic colors to the given activity.
+   *
+   * @param activity The target activity.
+   * @see #applyToActivityIfAvailable(Activity, DynamicColorsOptions)
+   */
+  public static void applyToActivityIfAvailable(@NonNull Activity activity) {
+    applyToActivityIfAvailable(activity, new DynamicColorsOptions.Builder().build());
+  }
+
+  /**
+   * Applies dynamic colors to the given activity with {@link DynamicColorsOptions} provided.
+   *
+   * @param activity The target activity.
+   * @param dynamicColorsOptions The dynamic colors options object that specifies the theme resource
+   *     ID, precondition to decide if dynamic colors should be applied and the callback function
+   *     for after dynamic colors have been applied.
+   */
+  public static void applyToActivityIfAvailable(
+      @NonNull Activity activity, @NonNull DynamicColorsOptions dynamicColorsOptions) {
+    applyToActivityIfAvailable(
+        activity,
+        dynamicColorsOptions.getThemeOverlay(),
+        dynamicColorsOptions.getPrecondition(),
+        dynamicColorsOptions.getOnAppliedCallback());
+  }
+
+  private static void applyToActivityIfAvailable(
+      @NonNull Activity activity,
+      @StyleRes int theme,
+      @NonNull Precondition precondition,
+      @NonNull OnAppliedCallback onAppliedCallback) {
     if (!isDynamicColorAvailable()) {
       return;
     }
@@ -234,7 +292,8 @@ public class DynamicColors {
       theme = getDefaultThemeOverlay(activity);
     }
     if (theme != 0 && precondition.shouldApplyDynamicColors(activity, theme)) {
-      applyDynamicColorThemeOverlay(activity, theme);
+      ThemeUtils.applyThemeOverlay(activity, theme);
+      onAppliedCallback.onApplied(activity);
     }
   }
 
@@ -257,7 +316,7 @@ public class DynamicColors {
    * Wraps the given context with the given theme overlay. The returned context can be used to
    * create views with dynamic color support.
    *
-   * If dynamic color support is not available, the original context will be returned.
+   * <p>If dynamic color support is not available, the original context will be returned.
    *
    * @param originalContext The original context.
    * @param theme The resource ID of the theme overlay that provides dynamic color definition.
@@ -274,14 +333,15 @@ public class DynamicColors {
     return theme == 0 ? originalContext : new ContextThemeWrapper(originalContext, theme);
   }
 
-  /**
-   * Returns {@code true} if dynamic colors are available on the current SDK level.
-   */
+  /** Returns {@code true} if dynamic colors are available on the current SDK level. */
   @SuppressLint("DefaultLocale")
   @ChecksSdkIntAtLeast(api = VERSION_CODES.S)
   public static boolean isDynamicColorAvailable() {
     if (VERSION.SDK_INT < VERSION_CODES.S) {
       return false;
+    }
+    if (BuildCompat.isAtLeastT()) {
+      return true;
     }
     DeviceSupportCondition deviceSupportCondition =
         DYNAMIC_COLOR_SUPPORTED_MANUFACTURERS.get(Build.MANUFACTURER.toLowerCase());
@@ -299,65 +359,44 @@ public class DynamicColors {
     return theme;
   }
 
-  private static void applyDynamicColorThemeOverlay(Activity activity, @StyleRes int theme) {
-    // Use applyStyle() instead of setTheme() due to Force Dark issue.
-    activity.getTheme().applyStyle(theme, /* force= */ true);
-
-    // Make sure theme is applied to the Window decorView similar to Activity#setTheme, to ensure
-    // that the dynamic colors will be applied to things like ContextMenu using the DecorContext.
-    Theme windowDecorViewTheme = getWindowDecorViewTheme(activity);
-    if (windowDecorViewTheme != null) {
-      windowDecorViewTheme.applyStyle(theme, /* force= */ true);
-    }
-  }
-
-  @Nullable
-  private static Theme getWindowDecorViewTheme(@NonNull Activity activity) {
-    Window window = activity.getWindow();
-    if (window != null) {
-      // Use peekDecorView() instead of getDecorView() to avoid locking the Window.
-      View decorView = window.peekDecorView();
-      if (decorView != null) {
-        Context context = decorView.getContext();
-        if (context != null) {
-          return context.getTheme();
-        }
-      }
-    }
-    return null;
-  }
-
-  /**
-   * The interface that provides a precondition to decide if dynamic colors should be applied.
-   */
+  /** The interface that provides a precondition to decide if dynamic colors should be applied. */
   public interface Precondition {
 
     /**
-     * Return {@code true} if dynamic colors should be applied on the given activity with the
-     * given theme overlay.
+     * Return {@code true} if dynamic colors should be applied on the given activity with the given
+     * theme overlay.
      */
     boolean shouldApplyDynamicColors(@NonNull Activity activity, @StyleRes int theme);
   }
 
+  /** The interface that provides a callback method after dynamic colors have been applied. */
+  public interface OnAppliedCallback {
+
+    /** The callback method after dynamic colors have been applied. */
+    void onApplied(@NonNull Activity activity);
+  }
+
   private static class DynamicColorsActivityLifecycleCallbacks
       implements ActivityLifecycleCallbacks {
-    private final int dynamicColorThemeOverlay;
-    private final Precondition precondition;
+    private final DynamicColorsOptions dynamicColorsOptions;
 
-    DynamicColorsActivityLifecycleCallbacks(@StyleRes int theme, @NonNull Precondition condition) {
-      dynamicColorThemeOverlay = theme;
-      precondition = condition;
+    DynamicColorsActivityLifecycleCallbacks(@NonNull DynamicColorsOptions options) {
+      this.dynamicColorsOptions = options;
     }
 
     @Override
-    public void onActivityPreCreated(@NonNull Activity activity,
-        @Nullable Bundle savedInstanceState) {
-      applyIfAvailable(activity, dynamicColorThemeOverlay, precondition);
+    public void onActivityPreCreated(
+        @NonNull Activity activity, @Nullable Bundle savedInstanceState) {
+      applyToActivityIfAvailable(
+          activity,
+          dynamicColorsOptions.getThemeOverlay(),
+          dynamicColorsOptions.getPrecondition(),
+          dynamicColorsOptions.getOnAppliedCallback());
     }
 
     @Override
-    public void onActivityCreated(@NonNull Activity activity,
-        @Nullable Bundle savedInstanceState) {}
+    public void onActivityCreated(
+        @NonNull Activity activity, @Nullable Bundle savedInstanceState) {}
 
     @Override
     public void onActivityStarted(@NonNull Activity activity) {}

@@ -19,7 +19,6 @@ package com.google.android.material.timepicker;
 import com.google.android.material.R;
 
 import static android.view.View.GONE;
-import static androidx.core.content.ContextCompat.getSystemService;
 import static com.google.android.material.timepicker.TimeFormat.CLOCK_12H;
 import static java.util.Calendar.AM;
 import static java.util.Calendar.HOUR;
@@ -38,15 +37,15 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.ColorInt;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.google.android.material.button.MaterialButtonToggleGroup;
-import com.google.android.material.button.MaterialButtonToggleGroup.OnButtonCheckedListener;
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.internal.TextWatcherAdapter;
+import com.google.android.material.internal.ViewUtils;
 import com.google.android.material.timepicker.TimePickerView.OnSelectionChange;
 import java.lang.reflect.Field;
 import java.util.Locale;
@@ -95,7 +94,7 @@ class TimePickerTextInputPresenter implements OnSelectionChange, TimePickerPrese
   private final EditText minuteEditText;
   private MaterialButtonToggleGroup toggle;
 
-  public TimePickerTextInputPresenter(LinearLayout timePickerView, TimeModel time) {
+  public TimePickerTextInputPresenter(final LinearLayout timePickerView, final TimeModel time) {
     this.timePickerView = timePickerView;
     this.time = time;
     Resources res = timePickerView.getResources();
@@ -137,9 +136,28 @@ class TimePickerTextInputPresenter implements OnSelectionChange, TimePickerPrese
 
     controller = new TimePickerTextInputKeyController(hourTextInput, minuteTextInput, time);
     hourTextInput.setChipDelegate(
-        new ClickActionDelegate(timePickerView.getContext(), R.string.material_hour_selection));
+        new ClickActionDelegate(timePickerView.getContext(), R.string.material_hour_selection) {
+          @Override
+          public void onInitializeAccessibilityNodeInfo(
+              View host, AccessibilityNodeInfoCompat info) {
+            super.onInitializeAccessibilityNodeInfo(host, info);
+            info.setContentDescription(
+                host.getResources()
+                    .getString(
+                        R.string.material_hour_suffix, String.valueOf(time.getHourForDisplay())));
+          }
+        });
     minuteTextInput.setChipDelegate(
-        new ClickActionDelegate(timePickerView.getContext(), R.string.material_minute_selection));
+        new ClickActionDelegate(timePickerView.getContext(), R.string.material_minute_selection) {
+          @Override
+          public void onInitializeAccessibilityNodeInfo(
+              View host, AccessibilityNodeInfoCompat info) {
+            super.onInitializeAccessibilityNodeInfo(host, info);
+            info.setContentDescription(
+                host.getResources()
+                    .getString(R.string.material_minute_suffix, String.valueOf(time.minute)));
+          }
+        });
 
     initialize();
   }
@@ -175,15 +193,15 @@ class TimePickerTextInputPresenter implements OnSelectionChange, TimePickerPrese
   private void setupPeriodToggle() {
     toggle = timePickerView.findViewById(R.id.material_clock_period_toggle);
 
-    toggle.addOnButtonCheckedListener(
-        new OnButtonCheckedListener() {
-          @Override
-          public void onButtonChecked(
-              MaterialButtonToggleGroup group, int checkedId, boolean isChecked) {
-            int period = checkedId == R.id.material_clock_period_pm_button ? PM : AM;
-            time.setPeriod(period);
-          }
-        });
+    toggle.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+      if (!isChecked) {
+        return;
+      }
+
+      int period = checkedId == R.id.material_clock_period_pm_button ? PM : AM;
+      time.setPeriod(period);
+    });
+
     toggle.setVisibility(View.VISIBLE);
     updateSelection();
   }
@@ -210,21 +228,16 @@ class TimePickerTextInputPresenter implements OnSelectionChange, TimePickerPrese
   @Override
   public void show() {
     timePickerView.setVisibility(View.VISIBLE);
+    onSelectionChanged(time.selection);
   }
 
   @Override
   public void hide() {
     View currentFocus = timePickerView.getFocusedChild();
-    // Hide keyboard in case it was showing.
-    if (currentFocus == null) {
-      timePickerView.setVisibility(GONE);
-      return;
+    if (currentFocus != null) {
+      ViewUtils.hideKeyboard(currentFocus);
     }
-    Context context = timePickerView.getContext();
-    InputMethodManager imm = getSystemService(context, InputMethodManager.class);
-    if (imm != null) {
-      imm.hideSoftInputFromWindow(currentFocus.getWindowToken(), 0);
-    }
+
     timePickerView.setVisibility(GONE);
   }
 

@@ -41,7 +41,6 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import com.google.android.material.button.MaterialButtonToggleGroup;
-import com.google.android.material.button.MaterialButtonToggleGroup.OnButtonCheckedListener;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.timepicker.ClockHandView.OnActionUpListener;
 import com.google.android.material.timepicker.ClockHandView.OnRotateListener;
@@ -66,6 +65,8 @@ class TimePickerView extends ConstraintLayout implements TimePickerControls {
   interface OnDoubleTapListener {
     void onDoubleTap();
   }
+
+  static final String GENERIC_VIEW_ACCESSIBILITY_CLASS_NAME = "android.view.View";
 
   private final Chip minuteView;
   private final Chip hourView;
@@ -101,25 +102,21 @@ class TimePickerView extends ConstraintLayout implements TimePickerControls {
     LayoutInflater.from(context).inflate(R.layout.material_timepicker, this);
     clockFace = findViewById(R.id.material_clock_face);
     toggle = findViewById(R.id.material_clock_period_toggle);
-    toggle.addOnButtonCheckedListener(
-        new OnButtonCheckedListener() {
-          @Override
-          public void onButtonChecked(
-              MaterialButtonToggleGroup group, int checkedId, boolean isChecked) {
-            int period = checkedId == R.id.material_clock_period_pm_button ? PM : AM;
-            if (onPeriodChangeListener != null && isChecked) {
-              onPeriodChangeListener.onPeriodChange(period);
-            }
-          }
-        });
+
+    toggle.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+      if (!isChecked) {
+        return;
+      }
+
+      if (onPeriodChangeListener != null) {
+        int period = checkedId == R.id.material_clock_period_pm_button ? PM : AM;
+        onPeriodChangeListener.onPeriodChange(period);
+      }
+    });
 
     minuteView = findViewById(R.id.material_minute_tv);
     hourView = findViewById(R.id.material_hour_tv);
     clockHandView = findViewById(R.id.material_clock_hand);
-
-    ViewCompat.setAccessibilityLiveRegion(
-        minuteView, ViewCompat.ACCESSIBILITY_LIVE_REGION_ASSERTIVE);
-    ViewCompat.setAccessibilityLiveRegion(hourView, ViewCompat.ACCESSIBILITY_LIVE_REGION_ASSERTIVE);
 
     setupDoubleTap();
 
@@ -173,6 +170,9 @@ class TimePickerView extends ConstraintLayout implements TimePickerControls {
 
     minuteView.setOnClickListener(selectionListener);
     hourView.setOnClickListener(selectionListener);
+
+    minuteView.setAccessibilityClassName(GENERIC_VIEW_ACCESSIBILITY_CLASS_NAME);
+    hourView.setAccessibilityClassName(GENERIC_VIEW_ACCESSIBILITY_CLASS_NAME);
   }
 
   @Override
@@ -213,8 +213,17 @@ class TimePickerView extends ConstraintLayout implements TimePickerControls {
 
   @Override
   public void setActiveSelection(@ActiveSelection int selection) {
-    minuteView.setChecked(selection == MINUTE);
-    hourView.setChecked(selection == HOUR);
+    updateSelection(minuteView, selection == MINUTE);
+    updateSelection(hourView, selection == HOUR);
+  }
+
+  private void updateSelection(Chip chip, boolean isSelected) {
+    chip.setChecked(isSelected);
+    ViewCompat.setAccessibilityLiveRegion(
+        chip,
+        isSelected
+            ? ViewCompat.ACCESSIBILITY_LIVE_REGION_ASSERTIVE
+            : ViewCompat.ACCESSIBILITY_LIVE_REGION_NONE);
   }
 
   public void addOnRotateListener(OnRotateListener onRotateListener) {

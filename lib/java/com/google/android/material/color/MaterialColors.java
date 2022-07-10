@@ -20,6 +20,7 @@ import com.google.android.material.R;
 import static android.graphics.Color.TRANSPARENT;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.util.TypedValue;
 import android.view.View;
@@ -28,6 +29,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import com.google.android.material.resources.MaterialAttributes;
 
@@ -44,15 +46,15 @@ public class MaterialColors {
 
   // TODO(b/199495444): token integration for color roles luminance values.
   // Tone means degrees of lightness, in the range of 0 (inclusive) to 100 (inclusive).
+  // Spec: https://m3.material.io/styles/color/the-color-system/color-roles
   private static final int TONE_ACCENT_LIGHT = 40;
-
   private static final int TONE_ON_ACCENT_LIGHT = 100;
   private static final int TONE_ACCENT_CONTAINER_LIGHT = 90;
   private static final int TONE_ON_ACCENT_CONTAINER_LIGHT = 10;
-  private static final int TONE_ACCENT_DARK = 70;
-  private static final int TONE_ON_ACCENT_DARK = 10;
-  private static final int TONE_ACCENT_CONTAINER_DARK = 20;
-  private static final int TONE_ON_ACCENT_CONTAINER_DARK = 80;
+  private static final int TONE_ACCENT_DARK = 80;
+  private static final int TONE_ON_ACCENT_DARK = 20;
+  private static final int TONE_ACCENT_CONTAINER_DARK = 30;
+  private static final int TONE_ON_ACCENT_CONTAINER_DARK = 90;
 
   private MaterialColors() {
     // Private constructor to prevent unwanted construction.
@@ -66,7 +68,9 @@ public class MaterialColors {
    */
   @ColorInt
   public static int getColor(@NonNull View view, @AttrRes int colorAttributeResId) {
-    return MaterialAttributes.resolveOrThrow(view, colorAttributeResId);
+    return resolveColor(
+        view.getContext(),
+        MaterialAttributes.resolveTypedValueOrThrow(view, colorAttributeResId));
   }
 
   /**
@@ -77,7 +81,10 @@ public class MaterialColors {
   @ColorInt
   public static int getColor(
       Context context, @AttrRes int colorAttributeResId, String errorMessageComponent) {
-    return MaterialAttributes.resolveOrThrow(context, colorAttributeResId, errorMessageComponent);
+    return resolveColor(
+        context,
+        MaterialAttributes.resolveTypedValueOrThrow(
+            context, colorAttributeResId, errorMessageComponent));
   }
 
   /**
@@ -99,9 +106,45 @@ public class MaterialColors {
       @NonNull Context context, @AttrRes int colorAttributeResId, @ColorInt int defaultValue) {
     TypedValue typedValue = MaterialAttributes.resolve(context, colorAttributeResId);
     if (typedValue != null) {
-      return typedValue.data;
+      return resolveColor(context, typedValue);
     } else {
       return defaultValue;
+    }
+  }
+
+  /**
+   * Returns the color state list for the provided theme color attribute, or the default value if
+   * the attribute is not set in the current theme.
+   */
+  @NonNull
+  public static ColorStateList getColorStateList(
+      @NonNull Context context,
+      @AttrRes int colorAttributeResId,
+      @NonNull ColorStateList defaultValue) {
+    ColorStateList resolvedColor = null;
+    TypedValue typedValue = MaterialAttributes.resolve(context, colorAttributeResId);
+    if (typedValue != null) {
+      resolvedColor = resolveColorStateList(context, typedValue);
+    }
+    return resolvedColor == null ? defaultValue : resolvedColor;
+  }
+
+  private static int resolveColor(@NonNull Context context, @NonNull TypedValue typedValue) {
+    if (typedValue.resourceId != 0) {
+      // Color State List
+      return ContextCompat.getColor(context, typedValue.resourceId);
+    } else {
+      // Color Int
+      return typedValue.data;
+    }
+  }
+
+  private static ColorStateList resolveColorStateList(
+      @NonNull Context context, @NonNull TypedValue typedValue) {
+    if (typedValue.resourceId != 0) {
+      return ContextCompat.getColorStateList(context, typedValue.resourceId);
+    } else {
+      return ColorStateList.valueOf(typedValue.data);
     }
   }
 

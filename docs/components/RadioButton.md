@@ -135,7 +135,7 @@ radioButton.setOnCheckedChangeListener { buttonView, isChecked
 Element                    | Attribute                                  | Related method(s)                                          | Default value
 -------------------------- | ------------------------------------------ | ---------------------------------------------------------- | -------------
 **To use material colors** | `app:useMaterialThemeColors`               | `setUseMaterialThemeColors`<br/>`isUseMaterialThemeColors` | `true` (ignored if `app:buttonTint` is set)
-**Color**                  | `app:buttonTint`                           | `setButtonTintList`<br/>`getButtonTintList`                | `?attr/colorOnSurface` (see all [states](https://github.com/material-components/material-components-android/tree/master/lib/java/com/google/android/material/color/res/color/m3_selection_control_button_tint.xml))
+**Color**                  | `app:buttonTint`                           | `setButtonTintList`<br/>`getButtonTintList`                | `?attr/colorOnSurface` (see all [states](https://github.com/material-components/material-components-android/tree/master/lib/java/com/google/android/material/radiobutton/res/color/m3_radiobutton_button_tint.xml))
 **Min size**               | `android:minWidth`<br/>`android:minHeight` | `(set/get)MinWidth`<br/>`(set/get)MinHeight`               | `?attr/minTouchTargetSize`
 
 The color of the radio button defaults to `?attr/colorOnSurface` (unchecked) and
@@ -145,9 +145,9 @@ tinted, set `app:useMaterialThemeColors` to `false`:
 
 ```xml
 <RadioButton
-        ...
+    ...
     app:useMaterialThemeColors="false"
-    />
+/>
 ```
 
 ### Text label attributes
@@ -240,7 +240,7 @@ attribute:
 
 ```xml
 <style name="Widget.App.RadioButton" parent="Widget.Material3.CompoundButton.RadioButton">
-   <item name="buttonTint">@color/button_tint</item>
+    <item name="buttonTint">@color/button_tint</item>
 </style>
 ```
 
@@ -248,9 +248,9 @@ and in `color/button_tint.xml`:
 
 ```xml
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-  <item android:color="@color/shrine_pink_900" android:state_checked="true"/>
-  <item android:alpha="0.38" android:color="@color/shrine_pink_100" android:state_enabled="false"/>
-  <item android:color="@color/shrine_pink_100"/>
+    <item android:color="@color/shrine_pink_900" android:state_checked="true"/>
+    <item android:alpha="0.38" android:color="@color/shrine_pink_100" android:state_enabled="false"/>
+    <item android:color="@color/shrine_pink_100"/>
 </selector>
 ```
 
@@ -258,7 +258,7 @@ You can use the styles in the layout, which affects only this radio button:
 
 ```xml
 <RadioButton
-        ...
+    ...
     style="@style/Widget.App.RadioButton"
-    />
+/>
 ```

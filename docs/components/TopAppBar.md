@@ -236,6 +236,12 @@ In the layout:
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 ```
 
+**Note:** If your scrolling view (`RecyclerView`, `ListView`, etc.) is nested
+within another view (e.g., a `SwipeRefreshLayout`), you should make sure to set
+`app:liftOnScrollTargetViewId` on your `AppBarLayout` to the id of the scrolling
+view. This will ensure that the `AppBarLayout` is using the right view to
+determine whether it should lift or not, and it will help avoid flicker issues.
+
 The following example shows the top app bar disappearing upon scrolling up, and
 appearing upon scrolling down.
 
@@ -259,6 +265,21 @@ In the layout:
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 ```
+
+### Status bar and edge-to-edge
+
+![Small top app bar with edge-to-edge status bar](assets/topappbar/topappbar_small.png)
+
+A common configuration for modern Top App Bars, as seen above, is to have a
+seamless color shared with the status bar. The best way to achieve this is to
+follow the
+[edge-to-edge guidance](https://developer.android.com/training/gestures/edge-to-edge),
+which will result in a transparent status bar that lets the background color of
+the Top App Bar show through.
+
+Make sure to set `android:fitsSystemWindows="true"` on your `AppBarLayout` (or
+`MaterialToolbar` if not using `AppBarLayout`), so that an extra inset is added
+to avoid overlap with the status bar.
 
 ### Center aligned top app bar example
 
@@ -296,22 +317,23 @@ Element                          | Attribute                | Related method(s) 
 
 #### Title attributes
 
-Element                                                  | Attribute                                                                                    | Related method(s)                 | Default value
--------------------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------- | -------------
-**`MaterialToolbar` title text**                         | `app:title`                                                                                  | `setTitle`<br>`getTitle`          | `null`
-**`MaterialToolbar` subtitle text**                      | `app:subtitle`                                                                               | `setSubtitle`<br>`getSubtitle`    | `null`
-**`MaterialToolbar` title color**                        | `app:titleTextColor`                                                                         | `setTitleTextColor`               | `?attr/colorOnSurface`
-**`MaterialToolbar` subtitle color**                     | `app:subtitleTextColor`                                                                      | `setSubtitleTextColor`            | `?attr/colorOnSurfaceVariant`
-**`MaterialToolbar` title typography**                   | `app:titleTextAppearance`                                                                    | `setTitleTextAppearance`          | `?attr/textAppearanceTitleLarge`
-**`MaterialToolbar` subtitle typography**                | `app:subtitleTextAppearance`                                                                 | `setSubtitleTextAppearance`       | `?attr/textAppearanceTitleMedium`
-**`MaterialToolbar` title centering**                    | `app:titleCentered`                                                                          | `setTitleCentered`                | `false`
-**`MaterialToolbar` subtitle centering**                 | `app:subtitleCentered`                                                                       | `setSubtitleCentered`             | `false`
-**`CollapsingToolbarLayout` collapsed title typography** | `app:collapsedTitleTextAppearance`                                                           | `setCollapsedTitleTextAppearance` | `?attr/textAppearanceTitleLarge`
-**`CollapsingToolbarLayout` expanded title typography**  | `app:expandedTitleTextAppearance`                                                            | `setExpandedTitleTextAppearance`  | `?attr/textAppearanceHeadlineSmall` for Medium</br>`?attr/textAppearanceHeadlineMedium` for Large
-**`CollapsingToolbarLayout` collapsed title color**      | `android:textColor` (in `app:collapsedTitleTextAppearance`) or `app:collapsedTitleTextColor` | `setCollapsedTitleTextColor`      | `?attr/colorOnSurface`
-**`CollapsingToolbarLayout` expanded title color**       | `android:textColor` (in `app:expandedTitleTextAppearance`) or `app:expandedTitleTextColor`   | `setExpandedTitleTextColor`       | `?attr/colorOnSurface`
-**`CollapsingToolbarLayout` expanded title margins**     | `app:expandedTitleMargin*`                                                                   | `setExpandedTitleMargin*`         | `16dp`
-**`CollapsingToolbarLayout` title max lines**            | `app:maxLines`                                                                               | `setMaxLines`<br>`getMaxLines`    | `1`
+Element                                                  | Attribute                                                                                    | Related method(s)                          | Default value
+-------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------ | -------------
+**`MaterialToolbar` title text**                         | `app:title`                                                                                  | `setTitle`<br>`getTitle`                   | `null`
+**`MaterialToolbar` subtitle text**                      | `app:subtitle`                                                                               | `setSubtitle`<br>`getSubtitle`             | `null`
+**`MaterialToolbar` title color**                        | `app:titleTextColor`                                                                         | `setTitleTextColor`                        | `?attr/colorOnSurface`
+**`MaterialToolbar` subtitle color**                     | `app:subtitleTextColor`                                                                      | `setSubtitleTextColor`                     | `?attr/colorOnSurfaceVariant`
+**`MaterialToolbar` title typography**                   | `app:titleTextAppearance`                                                                    | `setTitleTextAppearance`                   | `?attr/textAppearanceTitleLarge`
+**`MaterialToolbar` subtitle typography**                | `app:subtitleTextAppearance`                                                                 | `setSubtitleTextAppearance`                | `?attr/textAppearanceTitleMedium`
+**`MaterialToolbar` title centering**                    | `app:titleCentered`                                                                          | `setTitleCentered`                         | `false`
+**`MaterialToolbar` subtitle centering**                 | `app:subtitleCentered`                                                                       | `setSubtitleCentered`                      | `false`
+**`CollapsingToolbarLayout` collapsed title typography** | `app:collapsedTitleTextAppearance`                                                           | `setCollapsedTitleTextAppearance`          | `?attr/textAppearanceTitleLarge`
+**`CollapsingToolbarLayout` expanded title typography**  | `app:expandedTitleTextAppearance`                                                            | `setExpandedTitleTextAppearance`           | `?attr/textAppearanceHeadlineSmall` for Medium</br>`?attr/textAppearanceHeadlineMedium` for Large
+**`CollapsingToolbarLayout` collapsed title color**      | `android:textColor` (in `app:collapsedTitleTextAppearance`) or `app:collapsedTitleTextColor` | `setCollapsedTitleTextColor`               | `?attr/colorOnSurface`
+**`CollapsingToolbarLayout` expanded title color**       | `android:textColor` (in `app:expandedTitleTextAppearance`) or `app:expandedTitleTextColor`   | `setExpandedTitleTextColor`                | `?attr/colorOnSurface`
+**`CollapsingToolbarLayout` expanded title margins**     | `app:expandedTitleMargin*`                                                                   | `setExpandedTitleMargin*`                  | `16dp`
+**`CollapsingToolbarLayout` title max lines**            | `app:maxLines`                                                                               | `setMaxLines`<br>`getMaxLines`             | `1`
+**`CollapsingToolbarLayout` title ellipsize**            | `app:titleTextEllipsize`                                                                     | `setTitleEllipsize`<br>`getTitleEllipsize` | `end`
 
 #### Action items attributes
 
@@ -330,15 +352,16 @@ Element                                        | Attribute                      
 
 #### Scrolling behavior attributes
 
-Element                                                         | Attribute                    | Related method(s)                                                                                     | Default value
---------------------------------------------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------- | -------------
-**`MaterialToolbar` or `CollapsingToolbarLayout` scroll flags** | `app:layout_scrollFlags`     | `setScrollFlags`<br>`getScrollFlags`<br>(on `AppBarLayout.LayoutParams`)                              | `noScroll`
-**`MaterialToolbar` collapse mode**                             | `app:collapseMode`           | `setCollapseMode`<br>`getCollapseMode`<br>(on `CollapsingToolbar`)                                    | `none`
-**`CollapsingToolbarLayout` content scrim color**               | `app:contentScrim`           | `setContentScrim`<br>`setContentScrimColor`<br>`setContentScrimResource`<br>`getContentScrim`         | `null`
-**`CollapsingToolbarLayout` status bar scrim color**            | `app:statusBarScrim`         | `setStatusBarScrim`<br>`setStatusBarScrimColor`<br>`setStatusBarScrimResource`<br>`getStatusBarScrim` | `@empty`
-**`CollapsingToolbarLayout` scrim animation duration**          | `app:scrimAnimationDuration` | `setScrimAnimationDuration`<br>`getScrimAnimationDuration`                                            | `600`
-**`CollapsingToolbarLayout` collapsing animation interpolator** | `app:titlePositionInterpolator` | `setTitlePositionInterpolator`                                            | `@null`
-**`AppBarLayout` lift on scroll**                               | `app:liftOnScroll`           | `setLiftOnScroll`<br>`isLiftOnScroll`                                                                 | `true`
+Element                                                         | Attribute                       | Related method(s)                                                                                     | Default value
+--------------------------------------------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------- | -------------
+**`MaterialToolbar` or `CollapsingToolbarLayout` scroll flags** | `app:layout_scrollFlags`        | `setScrollFlags`<br>`getScrollFlags`<br>(on `AppBarLayout.LayoutParams`)                              | `noScroll`
+**`MaterialToolbar` collapse mode**                             | `app:collapseMode`              | `setCollapseMode`<br>`getCollapseMode`<br>(on `CollapsingToolbar`)                                    | `none`
+**`CollapsingToolbarLayout` content scrim color**               | `app:contentScrim`              | `setContentScrim`<br>`setContentScrimColor`<br>`setContentScrimResource`<br>`getContentScrim`         | `null`
+**`CollapsingToolbarLayout` status bar scrim color**            | `app:statusBarScrim`            | `setStatusBarScrim`<br>`setStatusBarScrimColor`<br>`setStatusBarScrimResource`<br>`getStatusBarScrim` | `@empty`
+**`CollapsingToolbarLayout` scrim animation duration**          | `app:scrimAnimationDuration`    | `setScrimAnimationDuration`<br>`getScrimAnimationDuration`                                            | `600`
+**`CollapsingToolbarLayout` collapsing animation interpolator** | `app:titlePositionInterpolator` | `setTitlePositionInterpolator`                                                                        | `@null`
+**`AppBarLayout` lift on scroll**                               | `app:liftOnScroll`              | `setLiftOnScroll`<br>`isLiftOnScroll`                                                                 | `true`
+**`AppBarLayout` lift on scroll target view**                   | `app:liftOnScrollTargetViewId`  | `setLiftOnScrollTargetViewId`<br>`getLiftOnScrollTargetViewId`                                        | `@null`
 
 #### `AppBarLayout` styles
 
@@ -705,6 +728,13 @@ Element            | Attribute                                    | Related meth
 **Color**          | `app:background`                             | N/A               | `?attr/actionModeBackground`
 **Height**         | `app:height`                                 | N/A               | `?attr/actionBarSize`
 **Overlay window** | `app:windowActionModeOverlay` (in app theme) | N/A               | `false`
+
+#### Toolbar logo attributes
+
+Element               | Attribute                                    | Related method(s)                                         | Default value
+--------------------- | -------------------------------------------- | --------------------------------------------------------- | -------------
+**AdjustViewBounds**  | `app:logoAdjustViewBounds`                   | `setLogoAdjustViewBounds`<br>`isLogoAdjustViewBounds`     | `false`
+**ScaleType**         | `app:logoScaleType`                          | `setLogoScaleType`<br>`getLogoScaleType`                  | ImageView's default
 
 #### Styles
 

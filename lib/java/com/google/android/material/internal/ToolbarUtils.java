@@ -16,6 +16,9 @@
 
 package com.google.android.material.internal;
 
+import static java.util.Collections.max;
+import static java.util.Collections.min;
+
 import android.graphics.drawable.Drawable;
 import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.appcompat.widget.ActionMenuView;
@@ -23,12 +26,16 @@ import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 import androidx.annotation.RestrictTo.Scope;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Utility methods for {@link Toolbar}s.
@@ -38,28 +45,63 @@ import androidx.annotation.RestrictTo.Scope;
 @RestrictTo(Scope.LIBRARY)
 public class ToolbarUtils {
 
+  private static final Comparator<View> VIEW_TOP_COMPARATOR =
+      new Comparator<View>() {
+        @Override
+        public int compare(View view1, View view2) {
+          return view1.getTop() - view2.getTop();
+        }
+      };
+
   private ToolbarUtils() {
     // Private constructor to prevent unwanted construction.
   }
 
   @Nullable
   public static TextView getTitleTextView(@NonNull Toolbar toolbar) {
-    return getTextView(toolbar, toolbar.getTitle());
+    List<TextView> textViews = getTextViewsWithText(toolbar, toolbar.getTitle());
+    return textViews.isEmpty() ? null : min(textViews, VIEW_TOP_COMPARATOR);
   }
 
   @Nullable
   public static TextView getSubtitleTextView(@NonNull Toolbar toolbar) {
-    return getTextView(toolbar, toolbar.getSubtitle());
+    List<TextView> textViews = getTextViewsWithText(toolbar, toolbar.getSubtitle());
+    return textViews.isEmpty() ? null : max(textViews, VIEW_TOP_COMPARATOR);
   }
 
-  @Nullable
-  private static TextView getTextView(@NonNull Toolbar toolbar, CharSequence text) {
+  private static List<TextView> getTextViewsWithText(@NonNull Toolbar toolbar, CharSequence text) {
+    List<TextView> textViews = new ArrayList<>();
     for (int i = 0; i < toolbar.getChildCount(); i++) {
       View child = toolbar.getChildAt(i);
       if (child instanceof TextView) {
         TextView textView = (TextView) child;
         if (TextUtils.equals(textView.getText(), text)) {
-          return textView;
+          textViews.add(textView);
+        }
+      }
+    }
+    return textViews;
+  }
+
+  @Nullable
+  public static ImageView getLogoImageView(@NonNull Toolbar toolbar) {
+    return getImageView(toolbar, toolbar.getLogo());
+  }
+
+  @Nullable
+  private static ImageView getImageView(@NonNull Toolbar toolbar, @Nullable Drawable content) {
+    if (content == null) {
+      return null;
+    }
+    for (int i = 0; i < toolbar.getChildCount(); i++) {
+      View child = toolbar.getChildAt(i);
+      if (child instanceof ImageView) {
+        ImageView imageView = (ImageView) child;
+        Drawable drawable = imageView.getDrawable();
+        if (drawable != null
+            && drawable.getConstantState() != null
+            && drawable.getConstantState().equals(content.getConstantState())) {
+          return imageView;
         }
       }
     }

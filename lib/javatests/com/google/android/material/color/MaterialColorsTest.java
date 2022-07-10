@@ -16,7 +16,7 @@
 
 package com.google.android.material.color;
 
-import com.google.android.material.R;
+import com.google.android.material.test.R;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -76,10 +76,10 @@ public final class MaterialColorsTest {
 
     ColorRoles colorRoles = MaterialColors.getColorRoles(context, RED);
 
-    assertThat(colorRoles.getAccent()).isEqualTo(getColorRole(RED, 70));
-    assertThat(colorRoles.getOnAccent()).isEqualTo(getColorRole(RED, 10));
-    assertThat(colorRoles.getAccentContainer()).isEqualTo(getColorRole(RED, 20));
-    assertThat(colorRoles.getOnAccentContainer()).isEqualTo(getColorRole(RED, 80));
+    assertThat(colorRoles.getAccent()).isEqualTo(getColorRole(RED, 80));
+    assertThat(colorRoles.getOnAccent()).isEqualTo(getColorRole(RED, 20));
+    assertThat(colorRoles.getAccentContainer()).isEqualTo(getColorRole(RED, 30));
+    assertThat(colorRoles.getOnAccentContainer()).isEqualTo(getColorRole(RED, 90));
   }
 
   @Test
@@ -98,10 +98,10 @@ public final class MaterialColorsTest {
 
     ColorRoles colorRoles = MaterialColors.getColorRoles(RED, /* isLightTheme= */ false);
 
-    assertThat(colorRoles.getAccent()).isEqualTo(getColorRole(RED, 70));
-    assertThat(colorRoles.getOnAccent()).isEqualTo(getColorRole(RED, 10));
-    assertThat(colorRoles.getAccentContainer()).isEqualTo(getColorRole(RED, 20));
-    assertThat(colorRoles.getOnAccentContainer()).isEqualTo(getColorRole(RED, 80));
+    assertThat(colorRoles.getAccent()).isEqualTo(getColorRole(RED, 80));
+    assertThat(colorRoles.getOnAccent()).isEqualTo(getColorRole(RED, 20));
+    assertThat(colorRoles.getAccentContainer()).isEqualTo(getColorRole(RED, 30));
+    assertThat(colorRoles.getOnAccentContainer()).isEqualTo(getColorRole(RED, 90));
   }
 
   private static int getColorRole(@ColorInt int color, @IntRange(from = 0, to = 100) int tone) {

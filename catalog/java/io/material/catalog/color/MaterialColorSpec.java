@@ -17,67 +17,49 @@
 package io.material.catalog.color;
 
 import android.content.Context;
+import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
-import java.util.Arrays;
-import java.util.List;
+import androidx.core.content.ContextCompat;
+import com.google.android.material.color.MaterialColors;
 
 /**
- * Represents a color value as defined in the Material Spec. These are all defined by color name +
- * color value. ie. blue500.
+ * Represents a color value as defined in the Material Spec.
  */
-public final class MaterialColorSpec {
-  public static final String SYSTEM_PREFIX = "system_";
-  static final int TEXT_COLOR_SWITCH_VALUE = 400;
+final class MaterialColorSpec {
 
-  @ColorRes private final int resourceId;
-  private final String resourceName;
-  private final String name;
-  private final int value;
+  private final String description;
+  @ColorInt private final int colorValue;
 
-  MaterialColorSpec(int resourceId, String resourceName, String name, int value) {
-    this.resourceId = resourceId;
-    this.resourceName = resourceName;
-    this.name = name;
-    this.value = value;
+  MaterialColorSpec(String description, int colorValue) {
+    this.description = description;
+    this.colorValue = colorValue;
   }
 
-  @ColorRes
-  int getResourceId() {
-    return resourceId;
+  String getDescription() {
+    return description;
   }
 
-  String getResourceName() {
-    return resourceName;
+  @ColorInt
+  int getColorValue() {
+    return colorValue;
   }
 
-  String getName() {
-    return name;
+  static MaterialColorSpec createFromResource(Context context, @ColorRes int colorRes) {
+    return new MaterialColorSpec(
+        context.getResources().getResourceEntryName(colorRes),
+        ContextCompat.getColor(context, colorRes));
   }
 
-  int getValue() {
-    return value;
+  static MaterialColorSpec createFromColorValue(
+      String colorNameResource, @ColorInt int colorValue) {
+    return new MaterialColorSpec(colorNameResource, colorValue);
   }
 
-  static MaterialColorSpec create(Context context, @ColorRes int colorRes) {
-    String resName = context.getResources().getResourceEntryName(colorRes);
-    String name;
-    String value;
-    if (resName.startsWith(SYSTEM_PREFIX)) {
-      // Split the resource name into the color name and value, ie. system_accent1_500 to
-      // system_accent1 and 500.
-      int splitIndex = resName.lastIndexOf("_");
-      name = resName.substring(0, splitIndex);
-      value = resName.substring(splitIndex + 1);
-    } else {
-      // Get the name of the color an value without prefixes
-      // String trimmedResName = resName;
-      int splitIndex = resName.lastIndexOf("_");
-      String trimmedResName = resName.substring(splitIndex + 1);
-      // Split the resource name into the color name and value, ie. blue500 to blue and 500.
-      List<String> parts = Arrays.asList(trimmedResName.split("(?<=\\D)(?=\\d)", -1));
-      name = parts.get(0);
-      value = parts.get(1);
-    }
-    return new MaterialColorSpec(colorRes, resName, name, Integer.parseInt(value));
+  static MaterialColorSpec createFromAttrResId(
+      Context context, String colorNameResource, @AttrRes int attrRes) {
+    return createFromColorValue(
+        colorNameResource,
+        MaterialColors.getColor(context, attrRes, colorNameResource + "cannot be resolved."));
   }
 }

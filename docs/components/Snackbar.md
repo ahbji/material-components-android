@@ -44,10 +44,8 @@ Available duration presets are:
 *   `LENGTH_SHORT` (Show the snackbar for a short period of time)
 
 **Note:** Snackbars work best if they are displayed inside of a
-[CoordinatorLayout](https://developer.android.com/reference/androidx/coordinatorlayout/widget/CoordinatorLayout).
-`CoordinatorLayout` allows the snackbar to enable behavior like
-swipe-to-dismiss, as well as automatically moving widgets like
-[FloatingActionButton](FloatingActionButton.md).
+[CoordinatorLayout](https://developer.android.com/reference/androidx/coordinatorlayout/widget/CoordinatorLayout),
+which allows the snackbar to enable behavior like swipe-to-dismiss.
 
 ### Making snackbars accessible
 
@@ -176,13 +174,14 @@ Element              | Attribute                | Related method(s) | Default va
 
 ### Container attributes
 
-Element                 | Attribute                         | Related method(s)                               | Default value
------------------------ | --------------------------------- | ----------------------------------------------- | -------------
-**Color**               | `app:backgroundTint`              | `setBackgroundTint`<br/>`setBackgroundTintList` | `?attr/colorSurfaceInverse`
-**Color overlay alpha** | `app:backgroundOverlayColorAlpha` | N/A                                             | `0.8f` (ignored if `app:backgroundTint` is set)
-**Margin**              | `android:layout_margin`           | N/A                                             | `8dp`
-**Elevation**           | `app:elevation`                   | N/A                                             | `6dp`
-**Animation mode**      | `app:animationMode`               | `setAnimationMode`<br/>`getAnimationMode`       | `fade`
+Element                 | Attribute                                              | Related method(s)                               | Default value
+----------------------- | ------------------------------------------------------ | ----------------------------------------------- | -------------
+**Color**               | `app:backgroundTint`                                   | `setBackgroundTint`<br/>`setBackgroundTintList` | `?attr/colorSurfaceInverse`
+**Color overlay alpha** | `app:backgroundOverlayColorAlpha`                      | N/A                                             | `0.8f` (ignored if `app:backgroundTint` is set)
+**Shape**               | `app:shapeAppearance`<br/>`app:shapeAppearanceOverlay` | N/A                                             | `?attr/shapeAppearanceCornerExtraSmall`
+**Margin**              | `android:layout_margin`                                | N/A                                             | `8dp`
+**Elevation**           | `app:elevation`                                        | N/A                                             | `6dp`
+**Animation mode**      | `app:animationMode`                                    | `setAnimationMode`<br/>`getAnimationMode`       | `fade`
 
 ### Action attributes
 

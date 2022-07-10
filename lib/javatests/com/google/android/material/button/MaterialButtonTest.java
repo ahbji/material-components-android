@@ -15,7 +15,7 @@
  */
 package com.google.android.material.button;
 
-import com.google.android.material.R;
+import com.google.android.material.test.R;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -146,6 +146,40 @@ public class MaterialButtonTest {
 
     unwrapDrawable = DrawableCompat.unwrap(materialButton.getIcon());
     assertThat(unwrapDrawable).isEqualTo(drawable2);
+  }
+
+  @Test
+  public void checkedStateTogglesOnClick() {
+    MaterialButton materialButton = new MaterialButton(context);
+    materialButton.setCheckable(true);
+
+    materialButton.performClick();
+    assertThat(materialButton.isChecked()).isTrue();
+
+    materialButton.performClick();
+    assertThat(materialButton.isChecked()).isFalse();
+  }
+
+  @Test
+  public void togglingCheckedStateTogglesOnClick() {
+    MaterialButton materialButton = new MaterialButton(context);
+    materialButton.setCheckable(true);
+    assertThat(materialButton.isChecked()).isFalse();
+
+    materialButton.setToggleCheckedStateOnClick(false);
+    materialButton.performClick();
+    assertThat(materialButton.isChecked()).isFalse();
+  }
+
+  @Test
+  public void setToggleCheckedStateOnClick() {
+    MaterialButton materialButton = new MaterialButton(context);
+    materialButton.setCheckable(true);
+
+    assertThat(materialButton.isToggleCheckedStateOnClick()).isTrue();
+
+    materialButton.setToggleCheckedStateOnClick(false);
+    assertThat(materialButton.isToggleCheckedStateOnClick()).isFalse();
   }
 
   @Test

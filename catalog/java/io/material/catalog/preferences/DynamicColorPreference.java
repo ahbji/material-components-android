@@ -23,6 +23,9 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import com.google.android.material.color.DynamicColors;
 import com.google.android.material.color.DynamicColors.Precondition;
+import com.google.android.material.color.DynamicColorsOptions;
+import com.google.android.material.color.HarmonizedColors;
+import com.google.android.material.color.HarmonizedColorsOptions;
 import com.google.common.collect.ImmutableList;
 
 /** Dynamic color preference to enable/disable dynamic colors. */
@@ -75,13 +78,29 @@ public class DynamicColorPreference extends CatalogPreference {
     isOptionOn = selectedOption.id == OPTION_ID_ON;
     if (isOptionOn && !isApplied) {
       isApplied = true;
-      DynamicColors.applyToActivitiesIfAvailable(
-          (Application) context.getApplicationContext(), precondition);
+      // TODO(b/221246424): Add preference option to turn on/off the color harmonization.
+      applyDynamicColorsWithMaterialDefaultHarmonization(context);
     }
   }
 
   @Override
   protected boolean shouldRecreateActivityOnOptionChanged() {
     return true;
+  }
+
+  private void applyDynamicColorsWithMaterialDefaultHarmonization(@NonNull Context context) {
+    DynamicColors.applyToActivitiesIfAvailable(
+        (Application) context.getApplicationContext(),
+        new DynamicColorsOptions.Builder()
+            .setPrecondition(precondition)
+            .setOnAppliedCallback(
+                activity -> {
+                  if ((activity instanceof BaseCatalogActivity)
+                      && ((BaseCatalogActivity) activity).isColorHarmonizationEnabled()) {
+                    HarmonizedColors.applyToContextIfAvailable(
+                        activity, HarmonizedColorsOptions.createMaterialDefaults());
+                  }
+                })
+            .build());
   }
 }

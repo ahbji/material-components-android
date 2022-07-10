@@ -206,7 +206,7 @@ See the full list of
 
 ### Implementing an exposed dropdown menu
 
-!["Text field with an exposed dropdown menu."](assets/textfields/textfields_exposed_dropdown_menu.png)
+!["Text field with an exposed dropdown menu."](assets/menu/menus_exposed_dropdown_outlined.png)
 
 In the layout:
 
@@ -219,12 +219,22 @@ In the layout:
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="none"
+        app:simpleItems="@array/simple_items"
     />
 
 </com.google.android.material.textfield.TextInputLayout>
 ```
 
-In code:
+The string array specified by `app:simpleItems` will be used as the default
+item strings for auto-completion. Or you can also set it programmatically:
+
+```kt
+val items = arrayOf("Item 1", "Item 2", "Item 3", "Item 4")
+(textField.editText as? MaterialAutoCompleteTextView)?.setSimpleItems(items)
+```
+
+Alternatively, to have more control over the auto-completion items rendering,
+you can also provide a custom item adapter by:
 
 ```kt
 val items = listOf("Item 1", "Item 2", "Item 3", "Item 4")
@@ -232,7 +242,7 @@ val adapter = ArrayAdapter(requireContext(), R.layout.list_item, items)
 (textField.editText as? AutoCompleteTextView)?.setAdapter(adapter)
 ```
 
-In the item layout (`list_item.xml`):
+And a custom item layout (`list_item.xml`):
 
 ```xml
 <TextView

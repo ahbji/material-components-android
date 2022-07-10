@@ -69,7 +69,7 @@ public abstract class NavigationBarMenuView extends ViewGroup implements MenuVie
   private static final int[] CHECKED_STATE_SET = {android.R.attr.state_checked};
   private static final int[] DISABLED_STATE_SET = {-android.R.attr.state_enabled};
 
-  @NonNull private final TransitionSet set;
+  @Nullable private final TransitionSet set;
   @NonNull private final OnClickListener onClickListener;
   private final Pools.Pool<NavigationBarItemView> itemPool =
       new Pools.SynchronizedPool<>(ITEM_POOL_SIZE);
@@ -90,6 +90,7 @@ public abstract class NavigationBarMenuView extends ViewGroup implements MenuVie
   @StyleRes private int itemTextAppearanceInactive;
   @StyleRes private int itemTextAppearanceActive;
   private Drawable itemBackground;
+  @Nullable private ColorStateList itemRippleColor;
   private int itemBackgroundRes;
   @NonNull private final SparseArray<BadgeDrawable> badgeDrawables =
       new SparseArray<>(ITEM_POOL_SIZE);
@@ -111,19 +112,23 @@ public abstract class NavigationBarMenuView extends ViewGroup implements MenuVie
 
     itemTextColorDefault = createDefaultColorStateList(android.R.attr.textColorSecondary);
 
-    set = new AutoTransition();
-    set.setOrdering(TransitionSet.ORDERING_TOGETHER);
-    set.setDuration(
-        MotionUtils.resolveThemeDuration(
-            getContext(),
-            R.attr.motionDurationLong1,
-            getResources().getInteger(R.integer.material_motion_duration_long_1)));
-    set.setInterpolator(
-        MotionUtils.resolveThemeInterpolator(
-            getContext(),
-            R.attr.motionEasingStandard,
-            AnimationUtils.FAST_OUT_SLOW_IN_INTERPOLATOR));
-    set.addTransition(new TextScale());
+    if (this.isInEditMode()) {
+      set = null;
+    } else {
+      set = new AutoTransition();
+      set.setOrdering(TransitionSet.ORDERING_TOGETHER);
+      set.setDuration(
+          MotionUtils.resolveThemeDuration(
+              getContext(),
+              R.attr.motionDurationLong1,
+              getResources().getInteger(R.integer.material_motion_duration_long_1)));
+      set.setInterpolator(
+          MotionUtils.resolveThemeInterpolator(
+              getContext(),
+              R.attr.motionEasingStandard,
+              AnimationUtils.FAST_OUT_SLOW_IN_INTERPOLATOR));
+      set.addTransition(new TextScale());
+    }
 
     onClickListener =
         new OnClickListener() {
@@ -559,6 +564,32 @@ public abstract class NavigationBarMenuView extends ViewGroup implements MenuVie
   }
 
   /**
+   * Sets the color of the item's ripple.
+   *
+   * This will only be used if there is not a custom background set on the item.
+   *
+   * @param itemRippleColor the color of the ripple
+   */
+  public void setItemRippleColor(@Nullable ColorStateList itemRippleColor) {
+    this.itemRippleColor = itemRippleColor;
+    if (buttons != null) {
+      for (NavigationBarItemView item : buttons) {
+        item.setItemRippleColor(itemRippleColor);
+      }
+    }
+  }
+
+  /**
+   * Returns the color to be used for the items ripple.
+   *
+   * @return the color for the items ripple
+   */
+  @Nullable
+  public ColorStateList getItemRippleColor() {
+    return itemRippleColor;
+  }
+
+  /**
    * Returns the drawable for the background of the menu items.
    *
    * @return the drawable for the background
@@ -697,6 +728,7 @@ public abstract class NavigationBarMenuView extends ViewGroup implements MenuVie
       } else {
         child.setItemBackground(itemBackgroundRes);
       }
+      child.setItemRippleColor(itemRippleColor);
       child.setShifting(shifting);
       child.setLabelVisibilityMode(labelVisibilityMode);
       MenuItemImpl item = (MenuItemImpl) menu.getItem(i);
@@ -736,7 +768,7 @@ public abstract class NavigationBarMenuView extends ViewGroup implements MenuVie
         selectedItemPosition = i;
       }
     }
-    if (previousSelectedId != selectedItemId) {
+    if (previousSelectedId != selectedItemId && set != null) {
       // Note: this has to be called before NavigationBarItemView#initialize().
       TransitionManager.beginDelayedTransition(this, set);
     }

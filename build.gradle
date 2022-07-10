@@ -5,7 +5,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:4.0.0'
+    classpath 'com.android.tools.build:gradle:7.2.0'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
   }
 }
@@ -25,11 +25,11 @@ ext {
 
   androidXVersions = [
     annotation            : '1.2.0',
-    appCompat             : '1.1.0',
+    appCompat             : '1.4.0',
     cardView              : '1.0.0',
     constraintlayout      : '2.0.1',
     coordinatorlayout     : '1.1.0',
-    core                  : '1.5.0',
+    core                  : '1.6.0',
     drawerlayout          : '1.1.1',
     experimental          : '1.0.0',
     fragment              : '1.2.5',
@@ -42,11 +42,11 @@ ext {
     dynamicanimation      : '1.0.0',
   ]
 
-  testRunnerVersion = '1.1.0'
+  testRunnerVersion = '1.4.0'
   espressoVersion = '3.1.0'
   mockitoCoreVersion = '2.25.0'
   truthVersion = '0.45'
-  robolectricVersion = '4.3'
+  robolectricVersion = '4.8-alpha-1'
 
   // Enforce the use of prebuilt dependencies in all sub-projects. This is
   // required for the doclava dependency.
@@ -59,7 +59,7 @@ ext {
     ? project.property('mavenRepoUrl') : '/tmp/myRepo/')
 
   // Current version of the library (could be in-development/unreleased).
-  mdcLibraryVersion = '1.6.0-alpha02'
+  mdcLibraryVersion = '1.7.0-alpha02'
   mdcLibraryPackage = "com.google.android.material"
   mdcLibraryDir = "com/google/android/material"
 }
@@ -155,6 +155,9 @@ def getArchivesBaseName(name) {
 subprojects {
     tasks.withType(Test) {
         maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+        forkEvery = 80
+        maxHeapSize = "2048m"
+        minHeapSize = "1024m"
     }
 }
 
@@ -194,11 +197,13 @@ subprojects {
         compileSdkVersion rootProject.ext.compileSdkVersion
 
         defaultConfig.minSdkVersion rootProject.ext.minSdkVersion
+        defaultConfig.targetSdkVersion rootProject.ext.targetSdkVersion
+
         // This disables the builds tools automatic vector -> PNG generation
         defaultConfig.generatedDensities = []
 
-        compileOptions.sourceCompatibility JavaVersion.VERSION_1_7
-        compileOptions.targetCompatibility JavaVersion.VERSION_1_7
+        compileOptions.sourceCompatibility JavaVersion.VERSION_1_8
+        compileOptions.targetCompatibility JavaVersion.VERSION_1_8
 
         aaptOptions.additionalParameters "--no-version-vectors"
 

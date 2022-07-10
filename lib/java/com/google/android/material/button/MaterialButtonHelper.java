@@ -76,6 +76,7 @@ class MaterialButtonHelper {
   private boolean backgroundOverwritten = false;
   private boolean cornerRadiusSet = false;
   private boolean checkable;
+  private boolean toggleCheckedStateOnClick = true;
   private LayerDrawable rippleDrawable;
   private int elevation;
 
@@ -117,6 +118,9 @@ class MaterialButtonHelper {
     checkable = attributes.getBoolean(R.styleable.MaterialButton_android_checkable, false);
     elevation = attributes.getDimensionPixelSize(R.styleable.MaterialButton_elevation, 0);
 
+    toggleCheckedStateOnClick =
+        attributes.getBoolean(R.styleable.MaterialButton_toggleCheckedStateOnClick, true);
+
     // Store padding before setting background, since background overwrites padding values
     int paddingStart = ViewCompat.getPaddingStart(materialButton);
     int paddingTop = materialButton.getPaddingTop();
@@ -143,6 +147,9 @@ class MaterialButtonHelper {
     MaterialShapeDrawable materialShapeDrawable = getMaterialShapeDrawable();
     if (materialShapeDrawable != null) {
       materialShapeDrawable.setElevation(elevation);
+      // Workaround (b/231320562): Setting background will cause drawables wrapped inside a
+      // RippleDrawable lose their states, we need to reset the state here.
+      materialShapeDrawable.setState(materialButton.getDrawableState());
     }
   }
 
@@ -357,6 +364,14 @@ class MaterialButtonHelper {
 
   boolean isCheckable() {
     return checkable;
+  }
+
+  boolean isToggleCheckedStateOnClick() {
+    return toggleCheckedStateOnClick;
+  }
+
+  void setToggleCheckedStateOnClick(boolean toggleCheckedStateOnClick) {
+    this.toggleCheckedStateOnClick = toggleCheckedStateOnClick;
   }
 
   @Nullable
